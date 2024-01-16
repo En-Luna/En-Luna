@@ -31,6 +31,14 @@ namespace En_Luna.Data.Models
         public int? RequiredProfessionDisciplineId {  get; set; }
 
         /// <summary>
+        /// Gets or sets the contractor identifier.
+        /// </summary>
+        /// <value>
+        /// The contractor identifier.
+        /// </value>
+        public int? ContractorId { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this instance has contractor.
         /// </summary>
         /// <value>
@@ -147,6 +155,14 @@ namespace En_Luna.Data.Models
         /// The solicitation.
         /// </value>
         public virtual Solicitation? Solicitation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contractor.
+        /// </summary>
+        /// <value>
+        /// The contractor.
+        /// </value>
+        public virtual Contractor? Contractor { get; set; }
 
         /// <summary>
         /// Gets or sets the project deliverable.

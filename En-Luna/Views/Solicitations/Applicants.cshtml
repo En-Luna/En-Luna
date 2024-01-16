@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using X.PagedList.Mvc.Core;
+@using En_Luna.ViewModels;
+
+@model ApplicationIndexViewModel
+
+@{
+    ViewData["Title"] = "Applicants";
+    ViewData["AddContainer"] = true;
+}
+
+<div class="row mt-4">
+    <div class="col">
+        <h2>Applicants</h2>
+        <hr />
+    </div>
+</div>
+
+@if (Model.Applications.Any())
+{
+    <div class="row mt-4">
+        <div class="col">
+            <h4>Current Applications</h4>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Role Description</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Profession</th>
+                        <th scope="col">Discipline</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ApplicationViewModel item in Model.Applications)
+                    {
+                        @if(item.Accepted || !item.PositionHasBeenFilled)
+                        {
+                            <tr>
+                                <td>@item.RoleDescription</td>
+                                <td>@item.ContractorName</td>
+                                <td>@item.ContractorProfession</td>
+                                <td>@item.ContractorDiscipline</td>
+                                <td>
+                                    <a class="btn btn-info" asp-controller="Users" asp-action="Details" asp-route-id="@item.UserId">View</a>
+                                </td>
+                                <td>
+                                    @if (item.Accepted)
+                                    {
+                                        <a href="javascript:void(0);" class="btn btn-danger" onclick="ajaxPost('/Solicitations/Fire', @item.Id, this)">Fire</a>
+                                    }
+                                    else if (!item.PositionHasBeenFilled)
+                                    {
+                                        <a href="javascript:void(0);" class="btn btn-primary" onclick="ajaxPost('/Solicitations/Hire', @item.Id, this)">Hire</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            @Html.PagedListPager(Model.Applications, page => Url.Action("Index", new { page }), En_Luna.Helpers.HtmlHelper.PagedListRenderOptions)
+        </div>
+    </div>
+}

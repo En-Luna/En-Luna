@@ -61,7 +61,7 @@
                                 <a class="btn btn-primary" asp-controller="Solicitations" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                             </td>
                             <td>
-                                <a class="btn btn-default" asp-controller="Solicitations" asp-action="Applicants" asp-route-id="@item.Id">Applicants</a>
+                                <a class="btn btn-info" asp-controller="Solicitations" asp-action="Applicants" asp-route-id="@item.Id">Applicants</a>
                             </td>
                             <td>
                                 <a href="javascript:void(0);" class="btn btn-danger" onclick="softDelete('/Solicitations/Deactivate', @item.Id, this)">Delete</a>

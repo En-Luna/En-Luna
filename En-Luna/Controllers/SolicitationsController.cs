@@ -62,7 +62,14 @@ namespace En_Luna.Controllers
             }
 
             Solicitation? solicitation = id.HasValue
-                ? _context.Solicitations.FirstOrDefault(x => x.Id == id.Value)
+                ? _context.Solicitations
+                .Include("Deadline.DeadlineType")
+                .Include(x => x.Roles)
+                .Include("Roles.ProjectDeliverable")
+                .Include("Roles.RequiredProfessionDiscipline.Profession")
+                .Include("Roles.RequiredProfessionDiscipline.Discipline")
+                .Include("Solicitor.Account")
+                .FirstOrDefault(x => x.Id == id.Value)
                 : new Solicitation();
 
             if (solicitation == null)
@@ -124,8 +131,14 @@ namespace En_Luna.Controllers
         [HttpGet("Applicants/{id:int}/{page:int?}")]
         public IActionResult Applicants(int id, int? page)
         {
-            var solicitationRoles = _context.SolicitationRoles.Where(x => x.SolicitationId == id).ToList();
-            var applications = _context.Applications.Where(x => solicitationRoles.Select(x => x.Id).Contains(x.SolicitationRoleId)).ToList();
+            var applications = _context.Applications
+                .Include("Contractor.Account")
+                .Include("Contractor.ProfessionDiscipline.Profession")
+                .Include("Contractor.ProfessionDiscipline.Discipline")
+                .Include(x => x.SolicitationRole)
+                .Where(x => _context.SolicitationRoles.Where(x => x.SolicitationId == id).Select(x => x.Id).Contains(x.SolicitationRoleId))
+                .OrderBy(x => x.SolicitationRoleId)
+                .ToList();
 
             IPagedList<ApplicationViewModel> applicationsViewModels = applications
                 .ToPagedList(page ?? 1, Constants.Constants.PageSize)
@@ -157,7 +170,7 @@ namespace En_Luna.Controllers
                     && !x.IsDeleted
                     && !x.IsCancelled
                     && !x.IsComplete
-                    && x.Roles.Select(r => r.RequiredProfessionDisciplineId).Contains(contractor.ProfessionDisciplineId)
+                    && x.Roles.Where(r => !r.HasContractor).Select(r => r.RequiredProfessionDisciplineId).Contains(contractor.ProfessionDisciplineId)
                 )
                 .ToList();
 
@@ -237,6 +250,61 @@ namespace En_Luna.Controllers
             );
 
             _emailSender.SendEmail(message);
+
+            return Json(true);
+        }
+
+        [HttpPost("Hire")]
+        public JsonResult Hire(int id)
+        {
+            var application = _context.Applications
+                .Include(x => x.SolicitationRole)
+                .Include(x => x.Contractor)
+                .FirstOrDefault(x => x.Id == id);
+
+            if (application == null)
+            {
+                return Json(false);
+            }
+
+            application.Accepted = true;
+            application.SolicitationRole.Contractor = application.Contractor;
+            application.SolicitationRole.HasContractor = true;
+
+            _context.Applications.Update(application);
+
+            var rejectedApplications = _context.Applications.Where(x => x.Id != id && x.SolicitationRoleId == application.SolicitationRoleId);
+
+            foreach (var rejectedApplication in rejectedApplications) 
+            {
+                rejectedApplication.Accepted = false;
+                _context.Applications.Update(rejectedApplication);
+            }
+
+            _context.SaveChanges();
+
+            return Json(true);
+        }
+        
+        [HttpPost("Fire")]
+        public JsonResult Fire(int id)
+        {
+            var application = _context.Applications
+                .Include(x => x.SolicitationRole)
+                .Include(x => x.Contractor)
+                .FirstOrDefault(x => x.Id == id);
+
+            if (application == null)
+            {
+                return Json(false);
+            }
+
+            application.Accepted = false;
+            application.SolicitationRole.Contractor = null;
+            application.SolicitationRole.HasContractor = false;
+
+            _context.Applications.Update(application);
+            _context.SaveChanges();
 
             return Json(true);
         }

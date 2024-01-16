@@ -1,0 +1,172 @@
+﻿@{
+    ViewData["AddContainer"] = true;
+}
+@using En_Luna.ViewModels;
+
+@model UserEditViewModel
+
+@using (Html.BeginForm())
+{
+    <div class="form-horizontal">
+        <h2>Account</h2>
+        <hr />
+        <div class="row">
+            <div class="col">
+                <div class="card mb-5">
+                    <div class="card-header">
+                        Personal Info
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PhoneNumber, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.AboutMe, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextAreaFor(model => model.AboutMe, new { @class = "form-control", @disabled="disabled" })
+                                    @Html.ValidationMessageFor(model => model.AboutMe, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card mb-5">
+                    <div class="card-header">
+                        Work info
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.HoursAvailablePerWeek, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.HoursAvailablePerWeek, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.HoursAvailablePerWeek, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CurrentWorkload, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.CurrentWorkload, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.CurrentWorkload, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card mb-5">
+                    <div class="card-header">
+                        Address
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Address.Address1, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Address.Address1, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.Address.Address1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Address.Address2, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Address.Address2, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.Address.Address2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Address.City, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Address.City, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.Address.City, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Address.StateId, htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownListFor(model => model.Address.StateId, Model.Address.States, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control", @disabled="disabled" })
+                                    @Html.ValidationMessageFor(model => model.Address.StateId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Address.ZipCode, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Address.ZipCode, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.Address.ZipCode, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Address.Country, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Address.Country, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                                    @Html.ValidationMessageFor(model => model.Address.Country, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        Contractor Info
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Contractor.ProfessionDisciplineId, htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownListFor(model => model.Contractor.ProfessionDisciplineId, Model.Contractor.ProfessionDisciplines, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control", @disabled="disabled" })
+                                    @Html.ValidationMessageFor(model => model.Contractor.ProfessionDisciplineId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

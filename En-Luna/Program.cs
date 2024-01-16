@@ -3,6 +3,7 @@ using En_Luna.Data.Models;
 using En_Luna.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddIdentity<User, IdentityRole>()
             .AddDefaultUI()
             .AddDefaultTokenProviders();
 
+builder.Services.AddMvc().AddJsonOptions(o => { o.JsonSerializerOptions.PropertyNamingPolicy = null; o.JsonSerializerOptions.DictionaryKeyPolicy = null; }); ;
 builder.Services.AddControllersWithViews();
 builder.Services.RegisterServices();
 builder.RegisterSettings();

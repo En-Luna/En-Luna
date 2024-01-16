@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Build.Framework;
+using System.ComponentModel;
 
 namespace En_Luna.ViewModels
 {
@@ -22,6 +23,7 @@ namespace En_Luna.ViewModels
         public string? Country { get; set; }
 
         [Required]
+        [DisplayName("State")]
         public int StateId { get; set; }
         public SelectList? States { get; set; }
     }
