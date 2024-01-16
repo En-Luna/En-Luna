@@ -13,7 +13,7 @@
         /// <value>
         /// The solicitation contractor identifier.
         /// </value>
-        public int? SolicitationContractorId { get; set; }
+        public int? SolicitationRoleId { get; set; }
 
         /// <summary>
         /// Gets or sets the solicitor identifier.
@@ -37,7 +37,7 @@
         /// <value>
         /// The contractor.
         /// </value>
-        public virtual SolicitationContractor? Contractor { get; set; }
+        public virtual SolicitationRole? SolicitationRole { get; set; }
 
         /// <summary>
         /// Navigational property. Gets or sets the solicitor.

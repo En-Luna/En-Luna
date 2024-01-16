@@ -3,7 +3,7 @@
 @using En_Luna.ViewModels
 @inject UserManager<User> UserManager
 
-@model SolicitationIndexViewModel
+@model SolicitationRoleIndexViewModel
 
 @{
     ViewData["Title"] = "Contracts";
@@ -23,7 +23,7 @@
     </div>
 </div>
 
-@if (Model.Solicitations.Any())
+@if (Model.SolicitationRoles.Any())
 {
     <div class="row mt-2">
         <div class="col">
@@ -38,21 +38,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (SolicitationViewModel item in Model.Solicitations)
+                    @foreach (SolicitationRoleViewModel item in Model.SolicitationRoles)
                     {
                         <tr>
-                            <td>@item.Title</td>
-                            <td>@item.StartDate</td>
-                            <td>@item.EstimatedEndDate</td>
-                            <td>@item.TeamMeetingTime</td>
+                            <td>@item.Solicitation.Title</td>
+                            <td>@item.Solicitation.StartDate.ToShortDateString()</td>
+                            <td>@item.Solicitation.EstimatedEndDate.ToShortDateString()</td>
+                            <td>@item.Solicitation.TeamMeetingTime.ToShortTimeString()</td>
                             <td>
-                                <a class="btn btn-primary" asp-controller="Contractors" asp-action="Contract" asp-route-id="@item.Id">View Details</a>
+                                <a class="btn btn-primary" asp-controller="Contractors" asp-action="View" asp-route-id="@item.Id">View Details</a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-            @Html.PagedListPager(Model.Solicitations, page => Url.Action("Contracts", new { page }), En_Luna.Helpers.HtmlHelper.PagedListRenderOptions)
+            @Html.PagedListPager(Model.SolicitationRoles, page => Url.Action("Contracts", new { page }), En_Luna.Helpers.HtmlHelper.PagedListRenderOptions)
         </div>
     </div>
 }

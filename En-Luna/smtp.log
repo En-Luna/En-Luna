@@ -294,3 +294,187 @@ C: .
 S: 250 2.0.0 Ok: queued
 C: QUIT
 S: 221 2.0.0 Bye
+Connected to smtp://sandbox.smtp.mailtrap.io:465/?starttls=always
+S: 220 smtp.mailtrap.io ESMTP ready
+C: EHLO DESKTOP-USNB86P
+S: 250-smtp.mailtrap.io
+S: 250-SIZE 5242880
+S: 250-PIPELINING
+S: 250-ENHANCEDSTATUSCODES
+S: 250-8BITMIME
+S: 250-DSN
+S: 250-AUTH PLAIN LOGIN CRAM-MD5
+S: 250 STARTTLS
+C: STARTTLS
+S: 220 2.0.0 Start TLS
+C: EHLO DESKTOP-USNB86P
+S: 250-smtp.mailtrap.io
+S: 250-SIZE 5242880
+S: 250-PIPELINING
+S: 250-ENHANCEDSTATUSCODES
+S: 250-8BITMIME
+S: 250-DSN
+S: 250 AUTH PLAIN LOGIN CRAM-MD5
+C: AUTH CRAM-MD5
+S: 334 PDIxNDA0NzI4Mi4xNzA1NDI1MzE0QHNtdHAubWFpbHRyYXAuaW8+
+C: ********
+S: 235 2.0.0 OK
+C: MAIL FROM:<enluna.info@gmail.com> SIZE=394
+C: RCPT TO:<enluna.info@gmail.com> ORCPT=rfc822;enluna.info@gmail.com
+C: RCPT TO:<cstalde1@gmail.com> ORCPT=rfc822;cstalde1@gmail.com
+S: 250 2.1.0 Ok
+S: 250 2.1.0 Ok
+S: 250 2.1.0 Ok
+C: DATA
+S: 354 Go ahead
+C: From: En-Luna <enluna.info@gmail.com>
+C: Date: Tue, 16 Jan 2024 12:15:13 -0500
+C: Subject: New Solicitation Posted for Review
+C: Message-Id: <00ESESAJ1MU4.NUJ6G60K8I561@desktop-usnb86p>
+C: To: En-Luna <enluna.info@gmail.com>, En-Luna <cstalde1@gmail.com>
+C: MIME-Version: 1.0
+C: Content-Type: text/plain; charset=utf-8
+C: 
+C: There is a new solicitation posted that needs reviewed. TODO give this html markup
+C: .
+S: 250 2.0.0 Ok: queued
+C: QUIT
+S: 221 2.0.0 Bye
+Connected to smtp://sandbox.smtp.mailtrap.io:465/?starttls=always
+S: 220 smtp.mailtrap.io ESMTP ready
+C: EHLO DESKTOP-USNB86P
+S: 250-smtp.mailtrap.io
+S: 250-SIZE 5242880
+S: 250-PIPELINING
+S: 250-ENHANCEDSTATUSCODES
+S: 250-8BITMIME
+S: 250-DSN
+S: 250-AUTH PLAIN LOGIN CRAM-MD5
+S: 250 STARTTLS
+C: STARTTLS
+S: 220 2.0.0 Start TLS
+C: EHLO DESKTOP-USNB86P
+S: 250-smtp.mailtrap.io
+S: 250-SIZE 5242880
+S: 250-PIPELINING
+S: 250-ENHANCEDSTATUSCODES
+S: 250-8BITMIME
+S: 250-DSN
+S: 250 AUTH PLAIN LOGIN CRAM-MD5
+C: AUTH CRAM-MD5
+S: 334 PDE2MDk4ODQzNzAuMTcwNTQyNjUwMEBzbXRwLm1haWx0cmFwLmlvPg==
+C: ********
+S: 235 2.0.0 OK
+C: MAIL FROM:<enluna.info@gmail.com> SIZE=365
+C: RCPT TO:<enluna.info@gmail.com> ORCPT=rfc822;enluna.info@gmail.com
+C: RCPT TO:<cstalde1@gmail.com> ORCPT=rfc822;cstalde1@gmail.com
+S: 250 2.1.0 Ok
+S: 250 2.1.0 Ok
+S: 250 2.1.0 Ok
+C: DATA
+S: 354 Go ahead
+C: From: En-Luna <enluna.info@gmail.com>
+C: Date: Tue, 16 Jan 2024 12:34:59 -0500
+C: Subject: Application Received
+C: Message-Id: <VLRGN8GJ1MU4.XZMLJF572A5J@desktop-usnb86p>
+C: To: En-Luna <enluna.info@gmail.com>, En-Luna <cstalde1@gmail.com>
+C: MIME-Version: 1.0
+C: Content-Type: text/plain; charset=utf-8
+C: 
+C: There is an application for solicitation. TODO give this html markup
+C: .
+S: 250 2.0.0 Ok: queued
+C: QUIT
+S: 221 2.0.0 Bye
+Connected to smtp://sandbox.smtp.mailtrap.io:465/?starttls=always
+S: 220 smtp.mailtrap.io ESMTP ready
+C: EHLO DESKTOP-USNB86P
+S: 250-smtp.mailtrap.io
+S: 250-SIZE 5242880
+S: 250-PIPELINING
+S: 250-ENHANCEDSTATUSCODES
+S: 250-8BITMIME
+S: 250-DSN
+S: 250-AUTH PLAIN LOGIN CRAM-MD5
+S: 250 STARTTLS
+C: STARTTLS
+S: 220 2.0.0 Start TLS
+C: EHLO DESKTOP-USNB86P
+S: 250-smtp.mailtrap.io
+S: 250-SIZE 5242880
+S: 250-PIPELINING
+S: 250-ENHANCEDSTATUSCODES
+S: 250-8BITMIME
+S: 250-DSN
+S: 250 AUTH PLAIN LOGIN CRAM-MD5
+C: AUTH CRAM-MD5
+S: 334 PDM3NzE0NTM0Mi4xNzA1NDI3MzA5QHNtdHAubWFpbHRyYXAuaW8+
+C: ********
+S: 235 2.0.0 OK
+C: MAIL FROM:<enluna.info@gmail.com> SIZE=366
+C: RCPT TO:<enluna.info@gmail.com> ORCPT=rfc822;enluna.info@gmail.com
+C: RCPT TO:<cstalde1@gmail.com> ORCPT=rfc822;cstalde1@gmail.com
+S: 250 2.1.0 Ok
+S: 250 2.1.0 Ok
+S: 250 2.1.0 Ok
+C: DATA
+S: 354 Go ahead
+C: From: En-Luna <enluna.info@gmail.com>
+C: Date: Tue, 16 Jan 2024 12:48:29 -0500
+C: Subject: Application Received
+C: Message-Id: <GQWEIYJJ1MU4.JND0XUK0E5C12@desktop-usnb86p>
+C: To: En-Luna <enluna.info@gmail.com>, En-Luna <cstalde1@gmail.com>
+C: MIME-Version: 1.0
+C: Content-Type: text/plain; charset=utf-8
+C: 
+C: There is an application for solicitation. TODO give this html markup
+C: .
+S: 250 2.0.0 Ok: queued
+C: QUIT
+S: 221 2.0.0 Bye
+Connected to smtp://sandbox.smtp.mailtrap.io:465/?starttls=always
+S: 220 smtp.mailtrap.io ESMTP ready
+C: EHLO DESKTOP-USNB86P
+S: 250-smtp.mailtrap.io
+S: 250-SIZE 5242880
+S: 250-PIPELINING
+S: 250-ENHANCEDSTATUSCODES
+S: 250-8BITMIME
+S: 250-DSN
+S: 250-AUTH PLAIN LOGIN CRAM-MD5
+S: 250 STARTTLS
+C: STARTTLS
+S: 220 2.0.0 Start TLS
+C: EHLO DESKTOP-USNB86P
+S: 250-smtp.mailtrap.io
+S: 250-SIZE 5242880
+S: 250-PIPELINING
+S: 250-ENHANCEDSTATUSCODES
+S: 250-8BITMIME
+S: 250-DSN
+S: 250 AUTH PLAIN LOGIN CRAM-MD5
+C: AUTH CRAM-MD5
+S: 334 PDI0MTcyNDU1Mi4xNzA1NDI3MzIwQHNtdHAubWFpbHRyYXAuaW8+
+C: ********
+S: 235 2.0.0 OK
+C: MAIL FROM:<enluna.info@gmail.com> SIZE=366
+C: RCPT TO:<enluna.info@gmail.com> ORCPT=rfc822;enluna.info@gmail.com
+C: RCPT TO:<cstalde1@gmail.com> ORCPT=rfc822;cstalde1@gmail.com
+S: 250 2.1.0 Ok
+S: 250 2.1.0 Ok
+S: 250 2.1.0 Ok
+C: DATA
+S: 354 Go ahead
+C: From: En-Luna <enluna.info@gmail.com>
+C: Date: Tue, 16 Jan 2024 12:48:39 -0500
+C: Subject: Application Received
+C: Message-Id: <D5TM90KJ1MU4.5PKH6VXB2O2L1@desktop-usnb86p>
+C: To: En-Luna <enluna.info@gmail.com>, En-Luna <cstalde1@gmail.com>
+C: MIME-Version: 1.0
+C: Content-Type: text/plain; charset=utf-8
+C: 
+C: There is an application for solicitation. TODO give this html markup
+C: .
+S: 250 2.0.0 Ok: queued
+C: QUIT
+S: 221 2.0.0 Bye

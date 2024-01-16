@@ -3,7 +3,9 @@ using En_Luna.Data;
 using En_Luna.Data.Models;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList;
 
@@ -15,28 +17,20 @@ namespace En_Luna.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ApplicationContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public ContractorsController(IMapper mapper, ApplicationContext context)
+        public ContractorsController(IMapper mapper, ApplicationContext context, UserManager<User> userManager)
         {
             _mapper = mapper;
             _context = context;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult AvailableContractors()
-        {
-            return View();
+            _userManager = userManager;
         }
 
         [HttpGet("Contracts/{contractorId:int}/{page:int?}")]
         public IActionResult Contracts(int contractorId, int? page)
         {
             var contractor = _context.Contractors
-                .Include("Solicitations.Solicitation")
+                .Include("SolicitationRoles.Solicitation")
                 .FirstOrDefault(x => x.Id == contractorId);
 
             if (contractor == null)
@@ -44,15 +38,34 @@ namespace En_Luna.Controllers
                 return RedirectToAction("Index");
             }
 
-            IPagedList<SolicitationViewModel> solicitationViewModels = contractor.Solicitations.Select(x => x.Solicitation)
+            IPagedList<SolicitationRoleViewModel> solicitationViewModels = contractor.SolicitationRoles
                 .ToPagedList(page ?? 1, Constants.Constants.PageSize)
-                .Map<Solicitation, SolicitationViewModel>(_mapper);
+                .Map<SolicitationRole, SolicitationRoleViewModel>(_mapper);
 
-            SolicitationIndexViewModel model = new SolicitationIndexViewModel
+            SolicitationRoleIndexViewModel model = new SolicitationRoleIndexViewModel
             {
-                Solicitations = solicitationViewModels
+                SolicitationRoles = solicitationViewModels
             };
 
+            return View(model);
+        }
+
+        [HttpGet("View/{solicitationRoleId:int}")]
+        public async Task<IActionResult> View(int solicitationRoleId)
+        {
+            var solicitationRole = _context.SolicitationRoles
+                .Include("Solicitation.Solicitor.Account")
+                .Include("Solicitation.Deadline.DeadlineType")
+                .Include(x => x.ProjectDeliverable)
+                .FirstOrDefault(x => x.Id == solicitationRoleId);
+
+            if (solicitationRole == null) 
+            {
+                var user = await _userManager.GetUserAsync(User);
+                return RedirectToAction("Contracts", new { user.ContractorId });
+            }
+
+            var model = _mapper.Map<SolicitationRoleViewModel>(solicitationRole);
             return View(model);
         }
     }

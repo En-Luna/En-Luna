@@ -108,6 +108,11 @@ namespace En_Luna.Extensions
                 .WithOne(x => x.Contractor)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Contractor>()
+                .HasMany(x => x.SolicitationRoles)
+                .WithOne(x => x.Contractor)
+                .OnDelete(DeleteBehavior.NoAction);
+
             #endregion
 
             #region ContractorSoftware
@@ -191,24 +196,6 @@ namespace En_Luna.Extensions
                 .WithOne(x => x.Solicitation)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Solicitation>()
-                .HasMany(x => x.Contractors)
-                .WithOne(x => x.Solicitation)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            #endregion
-
-            #region SolicitationContractor
-
-            modelBuilder.Entity<SolicitationContractor>()
-                .HasOne(x => x.Contractor)
-                .WithMany(x => x.Solicitations)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<SolicitationContractor>()
-                .HasMany(x => x.StatusUpdates)
-                .WithOne(x => x.Contractor)
-                .OnDelete(DeleteBehavior.NoAction);
 
             #endregion
 
@@ -230,6 +217,11 @@ namespace En_Luna.Extensions
 
             modelBuilder.Entity<SolicitationRole>()
                 .HasMany(x => x.RequiredSoftware)
+                .WithOne(x => x.SolicitationRole)
+                .OnDelete(DeleteBehavior.NoAction);
+            
+            modelBuilder.Entity<SolicitationRole>()
+                .HasMany(x => x.StatusUpdates)
                 .WithOne(x => x.SolicitationRole)
                 .OnDelete(DeleteBehavior.NoAction);
 

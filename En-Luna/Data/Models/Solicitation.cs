@@ -149,14 +149,6 @@ namespace En_Luna.Data.Models
         public virtual SolicitationDeadline? Deadline { get; set; } = new();
 
         /// <summary>
-        /// Navigational property. Gets or sets the contractors.
-        /// </summary>
-        /// <value>
-        /// The contractors.
-        /// </value>
-        public virtual ICollection<SolicitationContractor> Contractors { get; set; } = new Collection<SolicitationContractor>();
-
-        /// <summary>
         /// Navigational property. Gets or sets the roles.
         /// </summary>
         /// <value>

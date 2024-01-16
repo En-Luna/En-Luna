@@ -199,5 +199,13 @@ namespace En_Luna.Data.Models
         /// The provided software.
         /// </value>
         public virtual ICollection<SolicitationRoleProvidedSoftware> ProvidedSoftware { get; set; } = new Collection<SolicitationRoleProvidedSoftware>();
+
+        /// <summary>
+        /// Gets or sets the status updates.
+        /// </summary>
+        /// <value>
+        /// The status updates.
+        /// </value>
+        public virtual ICollection<StatusUpdate> StatusUpdates { get; set; } = new Collection<StatusUpdate>();
     }
 }

@@ -46,7 +46,7 @@ namespace En_Luna.Data.Models
         /// <value>
         /// The solicitations.
         /// </value>
-        public virtual ICollection<SolicitationContractor> Solicitations { get; set; } = new Collection<SolicitationContractor>();
+        public virtual ICollection<SolicitationRole> SolicitationRoles { get; set; } = new Collection<SolicitationRole>();
 
         /// <summary>
         /// Gets or sets the available software the contractor can use.

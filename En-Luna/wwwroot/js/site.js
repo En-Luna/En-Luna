@@ -50,7 +50,6 @@ function ajaxPost(targetUrl, targetId, elem) {
         success: function (result) {
 
             $('#successful-toast').toast('show');
-
             //obj.fadeTo(10, 1, () => {
             //    obj.children('td', 'th')
             //        .animate({ 'padding-top': '0', 'padding-bottom': '0' })
@@ -58,6 +57,7 @@ function ajaxPost(targetUrl, targetId, elem) {
             //        .children()
             //        .slideUp(100, () => { obj.remove(); });
             //});
+
         },
         error: function (data) {
             $('#failed-toast').toast('show');

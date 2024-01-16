@@ -29,7 +29,6 @@ namespace En_Luna.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Software> Software { get; set; }
         public DbSet<Solicitation> Solicitations { get; set; }
-        public DbSet<SolicitationContractor> SolicitationContractors { get; set; }
         public DbSet<SolicitationDeadline> SolicitationDeadlines { get; set; }
         public DbSet<SolicitationRole> SolicitationRoles { get; set; }
         public DbSet<SolicitationRoleProvidedSoftware> SolicitationRoleProvidedSoftware { get; set; }

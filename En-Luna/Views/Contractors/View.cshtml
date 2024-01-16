@@ -1,0 +1,186 @@
+﻿@model En_Luna.ViewModels.SolicitationRoleViewModel
+
+@{
+    ViewData["Title"] = "View";
+    ViewData["AddContainer"] = true;
+}
+
+<div class="form-horizontal">
+    <div class="row">
+        <div class="col">
+            <div class="card mb-5">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            @Html.LabelFor(model => model.Solicitation.Solicitor, htmlAttributes: new { @class = "control-label" })
+                            <a class="btn btn-link" asp-controller="Users" asp-action="Details" asp-route-id="@Model.Solicitation.Solicitor.Account.Id">@Model.Solicitation.Solicitor.Account.Username</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.Title, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(model => model.Solicitation.Title, new {  @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.StartDate, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Solicitation.StartDate, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.EstimatedEndDate, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Solicitation.EstimatedEndDate, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.TeamMeetingTime, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Solicitation.TeamMeetingTime, new { htmlAttributes = new { @type = "time", @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.TimeZone, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(model => Model.Solicitation.TimeZone, new { @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.City, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Solicitation.City, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.County, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Solicitation.County, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.State, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(model => model.Solicitation.State.Abbreviation, new { @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.SharedDriveUrl, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Solicitation.SharedDriveUrl, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card mb-5">
+                <div class="card-header">
+                    Deadline
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.DeadlineType, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(model => model.Solicitation.DeadlineType.Name, new { @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Solicitation.StartDate, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Solicitation.StartDate, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card mb-5">
+                <div class="card-header">
+                    Role
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(model => model.Description, new { @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ProjectDeliverable.Name, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.ProjectDeliverable.Name, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.LumpSum, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(model => model.LumpSum, new { @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.HourlyRate, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.HourlyRate, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SignBonus, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.SignBonus, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DeliverableDeadline, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.DeliverableDeadline, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Workload, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Workload, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col">
+            <div>
+                <a asp-action="Contracts">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
