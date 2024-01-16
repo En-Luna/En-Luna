@@ -1,0 +1,402 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1 xmlns="http://www.w3.org/1999/html">@ViewData["Title"]</h1>
+
+<form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+    <div class="form-horizontal">
+        <!-- <h2>Account</h2> -->
+        <h6>Thanks for your interest in En-Luna! We are excited to work with you, but first, let's get to know each other. Please <a href="/#contact">contact us</a> to schedule a chat prior to creating an account.</h6>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x => x.Input.Id)
+        @Html.HiddenFor(x => x.Input.AddressId)
+        @Html.HiddenFor(x => x.Input.BankAccountId)
+        @Html.HiddenFor(x => x.Input.ContractorId)
+        @Html.HiddenFor(x => x.Input.SolicitorId)
+        <div class="row">
+            <div class="col">
+                <div class="card mb-5">
+                    <div class="card-header">
+                        Personal Info
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            @Html.LabelFor(x => x.Input.FirstName, htmlAttributes: new { @class = "control-label" })
+                                            @Html.EditorFor(x => x.Input.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(x => x.Input.FirstName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            @Html.LabelFor(x => x.Input.LastName, htmlAttributes: new { @class = "control-label" })
+                                            @Html.EditorFor(x => x.Input.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(x => x.Input.LastName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            @Html.LabelFor(x => x.Input.Email, htmlAttributes: new { @class = "control-label" })
+                                            @Html.EditorFor(x => x.Input.Email, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(x => x.Input.Email, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            @Html.LabelFor(x => x.Input.PhoneNumber, htmlAttributes: new { @class = "control-label" })
+                                            @Html.EditorFor(x => x.Input.PhoneNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(x => x.Input.PhoneNumber, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            @Html.LabelFor(x => x.Input.SocialSecurityNumber, htmlAttributes: new { @class = "control-label" })
+                                            @Html.EditorFor(x => x.Input.SocialSecurityNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(x => x.Input.SocialSecurityNumber, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-floating mb-3">
+                                            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                                            <label asp-for="Input.Password">Password</label>
+                                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                 </div>
+                                 <div class="row">
+                                    <div class="col">
+                                        <div class="form-floating mb-3">
+                                            <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                                            <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.AboutMe, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextAreaFor(x => x.Input.AboutMe, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(x => x.Input.AboutMe, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card mb-5">
+                    <div class="card-header">
+                        Work info
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.HoursAvailablePerWeek, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.HoursAvailablePerWeek, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.HoursAvailablePerWeek, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card mb-5">
+                    <div class="card-header">
+                        Address
+                    </div>
+                    @Html.HiddenFor(x => x.Input.Address.Id)
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.Address.Address1, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.Address.Address1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.Address.Address1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.Address.Address2, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.Address.Address2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.Address.Address2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.Address.City, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.Address.City, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.Address.City, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.Address.StateId, htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownListFor(x => x.Input.Address.StateId, Model.Input.Address.States, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(x => x.Input.Address.StateId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.Address.ZipCode, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.Address.ZipCode, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.Address.ZipCode, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.Address.Country, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.Address.Country, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.Address.Country, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-5">
+                    <div class="card-header">
+                        Bank Account
+                    </div>
+                    @Html.HiddenFor(x => x.Input.BankAccount.Id)
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.BankAccount.BankName, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.BankAccount.BankName, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.BankAccount.BankName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.BankAccount.AccountType, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.BankAccount.AccountType, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.BankAccount.AccountType, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.BankAccount.RoutingNumber, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.BankAccount.RoutingNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.BankAccount.RoutingNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.BankAccount.AccountNumber, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.BankAccount.AccountNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.BankAccount.AccountNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        Contractor Info
+                    </div>
+                    <div class="card-body">
+                        @Html.HiddenFor(x => x.Input.Contractor.Id)
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.Contractor.ProfessionDisciplineId, htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownListFor(x => x.Input.Contractor.ProfessionDisciplineId, Model.Input.Contractor.ProfessionDisciplines, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(x => x.Input.Contractor.ProfessionDisciplineId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        Company Info
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.CompanyTypeId, htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownListFor(x => x.Input.CompanyTypeId, Model.Input.CompanyTypes, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(x => x.Input.CompanyTypeId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.Input.CompanyName, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(x => x.Input.CompanyName, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(x => x.Input.CompanyName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.CheckBoxFor(x => x.Input.IsSolicitor, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.LabelFor(x => x.Input.IsSolicitor, htmlAttributes: new { @class = "control-label" })
+                                    @Html.ValidationMessageFor(x => x.Input.IsSolicitor, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <a class="btn btn-primary" asp-area="Admin" asp-controller="Users" asp-action="Index">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<div class="row">
+        <div class="col">
+            <h2>Create a new account.</h2>
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                @Html.EditorFor()
+                <input asp-for="Input.FirstName" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.FirstName">@Input</label>
+                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <input asp-for="Input.LastName" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.LastName">LastName</label>
+                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Email">Confirm Password</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-floating mb-3">
+                <input asp-for="Input.PhoneNumber" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.PhoneNumber">PhoneNumber</label>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <input asp-for="Input.SocialSecurityNumber" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.SocialSecurityNumber">SocialSecurityNumber</label>
+                <span asp-validation-for="Input.SocialSecurityNumber" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-floating mb-3">
+                <textarea asp-for="Input.Email" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Email">Confirm Password</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password">Password</label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </div>
+    </div>*@
+</form>
+    @*<div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Use another service to register.</h3>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
+                            about setting up this ASP.NET application to support logging in via external services</a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div>*@
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

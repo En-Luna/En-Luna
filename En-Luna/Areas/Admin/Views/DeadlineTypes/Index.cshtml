@@ -1,0 +1,51 @@
+﻿@using X.PagedList.Mvc.Core
+@using En_Luna.ViewModels
+
+@model DeadlineTypeIndexViewModel
+
+<div class="row mt-4">
+    <div class="col">
+        <h2>Deadline Types</h2>
+        <hr />
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col">
+        <a class="btn btn-primary" asp-area="Admin" asp-controller="DeadlineTypes" asp-action="Edit">New</a>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col">
+        <h4>Current Deadline Types</h4>
+    </div>
+</div>
+<!--TODO Filters-->
+
+<div class="row mt-2">
+    <div class="col">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DeadlineTypeViewModel item in Model.DeadlineTypes)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>
+                            <a href="/Admin/DeadlineTypes/Edit/@item.Id" class="btn btn-primary">Edit</a>
+                        </td>
+                        <td>
+                            <a href="javascript:void(0);" class="btn btn-danger" onclick="softDelete('/Admin/DeadlineTypes/Delete', @item.Id, this)">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.PagedListPager(Model.DeadlineTypes, page => Url.Action("Index", new { page }), En_Luna.Helpers.HtmlHelper.PagedListRenderOptions)
+    </div>
+</div>

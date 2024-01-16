@@ -1,0 +1,58 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using X.PagedList.Mvc.Core
+@using En_Luna.ViewModels
+@inject UserManager<User> UserManager
+
+@model SolicitationIndexViewModel
+
+@{
+    ViewData["Title"] = "Contracts";
+    ViewData["AddContainer"] = true;
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<div class="row mt-4">
+    <div class="col">
+        <h2>Active Contracts</h2>
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <a href="@($"/Solicitations/Search/{user.ContractorId}/1")">Search for Open Contracts</a>
+    </div>
+</div>
+
+@if (Model.Solicitations.Any())
+{
+    <div class="row mt-2">
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Start Date</th>
+                        <th scope="col">Estimated End Date</th>
+                        <th scope="col">Meeting Time</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (SolicitationViewModel item in Model.Solicitations)
+                    {
+                        <tr>
+                            <td>@item.Title</td>
+                            <td>@item.StartDate</td>
+                            <td>@item.EstimatedEndDate</td>
+                            <td>@item.TeamMeetingTime</td>
+                            <td>
+                                <a class="btn btn-primary" asp-controller="Contractors" asp-action="Contract" asp-route-id="@item.Id">View Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @Html.PagedListPager(Model.Solicitations, page => Url.Action("Contracts", new { page }), En_Luna.Helpers.HtmlHelper.PagedListRenderOptions)
+        </div>
+    </div>
+}

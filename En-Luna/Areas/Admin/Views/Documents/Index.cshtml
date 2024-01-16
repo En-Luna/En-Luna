@@ -1,0 +1,55 @@
+﻿@using X.PagedList.Mvc.Core
+@using En_Luna.ViewModels
+
+@model DocumentIndexViewModel
+
+<div class="row mt-4">
+    <div class="col">
+        <h2>Documents</h2>
+        <hr />
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col">
+        <a class="btn btn-primary" asp-area="Admin" asp-controller="Documents" asp-action="Edit">New</a>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col">
+        <h4>Current Documents</h4>
+    </div>
+</div>
+<!--TODO Filters-->
+
+<div class="row mt-2">
+    <div class="col">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">TODO</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DocumentViewModel item in Model.Documents)
+                {
+                    <tr>
+                        <td>TODO</td>
+                        <td>
+                            <a href="/Admin/Documents/Edit/@item.Id" class="btn btn-primary">Edit</a>
+                        </td>
+                        <td>
+                            <a href="javascript:void(0);" class="btn btn-danger" onclick="verify('/Admin/Documents/Verify', @item.Id, this)">Verify</a>
+                        </td>
+                        <td>
+                            <a href="javascript:void(0);" class="btn btn-danger" onclick="softDelete('/Admin/Documents/Delete', @item.Id, this)">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.PagedListPager(Model.Documents, page => Url.Action("Index", new { page }), En_Luna.Helpers.HtmlHelper.PagedListRenderOptions)
+    </div>
+</div>

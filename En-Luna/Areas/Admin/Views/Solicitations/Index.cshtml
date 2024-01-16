@@ -1,0 +1,70 @@
+﻿@using X.PagedList.Mvc.Core
+@using En_Luna.ViewModels
+
+@model SolicitationIndexViewModel
+
+<div class="row mt-4">
+    <div class="col">
+        <h2>Solicitations</h2>
+        <hr />
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col">
+        <a class="btn btn-primary" asp-area="Admin" asp-controller="Solicitations" asp-action="Edit">New</a>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col">
+        <h4>Current Solicitations</h4>
+    </div>
+</div>
+
+<!--TODO Filters-->
+
+<div class="row mt-2">
+    <div class="col">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Solicitor</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Active</th>
+                    <th scope="col">Approved</th>
+                    <th scope="col">Completed</th>
+                    <th scope="col">Cancelled</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (SolicitationViewModel item in Model.Solicitations)
+                {
+                    <tr>
+                        <td>@(item.Solicitor?.Account?.Username ?? string.Empty)</td>
+                        <td>@item.Title</td>
+                        <td><i class="bi @(item.IsActive ? "bi-check2-square" : "bi-app")"></i></td>
+                        <td><i class="bi @(item.IsApproved ? "bi-check2-square" : "bi-app")"></i></td>
+                        <td><i class="bi @(item.IsComplete ? "bi-check2-square" : "bi-app")"></i></td>
+                        <td><i class="bi @(item.IsCancelled ? "bi-check2-square" : "bi-app")"></i></td>
+                        <td>
+                            <a href="/Admin/Solicitations/Edit/@item.Id" class="btn btn-primary">Edit</a>
+                        </td>
+                        <td>
+                            <a href="javascript:void(0);" class="btn btn-primary" onclick="ajaxPost('/Admin/Solicitations/Activate', @item.Id, this)">Activate</a>
+                        </td>
+                        <td>
+                            <a href="javascript:void(0);" class="btn btn-primary" onclick="ajaxPost('/Admin/Solicitations/Approve', @item.Id, this)">Approve</a>
+                        </td>
+                        <td>
+                            <a href="javascript:void(0);" class="btn btn-danger" onclick="softDelete('/Admin/Solicitations/Delete', @item.Id, this)">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.PagedListPager(Model.Solicitations, page => Url.Action("Index", new { page }), En_Luna.Helpers.HtmlHelper.PagedListRenderOptions)
+    </div>
+</div>

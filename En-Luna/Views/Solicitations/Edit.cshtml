@@ -1,0 +1,345 @@
+﻿@using En_Luna.ViewModels;
+
+@model SolicitationEditViewModel
+@{
+    ViewData["Title"] = "Solicitation";
+    ViewData["AddContainer"] = true;
+}
+
+@using (var form = Html.BeginForm())
+{
+    <div class="form-horizontal">
+        <h2>Solicitation</h2>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.SolicitorId)
+
+        <div class="row">
+            <div class="col">
+                <div class="card mb-5">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.EstimatedEndDate, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.EstimatedEndDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.EstimatedEndDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TeamMeetingTime, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.TeamMeetingTime, new { htmlAttributes = new {  @class = "timepicker form-control" } })
+                                    @Html.ValidationMessageFor(model => model.TeamMeetingTime, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TimeZone, htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownListFor(model => model.TimeZone, Model.TimeZones, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.TimeZone, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.County, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.County, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.County, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.StateId, htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownListFor(model => model.StateId, Model.States, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.StateId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SharedDriveUrl, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.SharedDriveUrl, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.SharedDriveUrl, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card mb-5">
+                    <div class="card-header">
+                        Deadline
+                    </div>
+                    <div class="card-body">
+                        @Html.HiddenFor(model => model.SolicitationDeadline.Id)
+                        @Html.HiddenFor(model => model.SolicitationDeadline.SolicitationId)
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SolicitationDeadline.DeadlineTypeId, htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownListFor(model => model.SolicitationDeadline.DeadlineTypeId, Model.SolicitationDeadline.DeadlineTypes, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SolicitationDeadline.DeadlineTypeId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SolicitationDeadline.DeadlineDate, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.SolicitationDeadline.DeadlineDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.SolicitationDeadline.DeadlineDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card mb-5">
+                    <div class="card-header">
+                        Roles
+                    </div>
+                    <div class="card-body">
+                        @Html.HiddenFor(model => model.Id)
+                        <div class="row">
+                            <div class="col">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col">Description</th>
+                                            <th scope="col">Project Deliverable</th>
+                                            <th scope="col">Profession Discipline</th>
+                                            <th scope="col">Lump Sum</th>
+                                            <th scope="col">Hourly Rate</th>
+                                            <th scope="col">Sign Bonus</th>
+                                            <th scope="col">Deliverable Deadline</th>
+                                            <th scope="col">Workload</th>
+                                            <th scope="col">Assigned</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="SolicitationRoleTable">
+                                        @for (int i = 0; i < Model.SolicitationRoles.Count; i++)
+                                        {
+                                            <tr>
+                                                @Html.HiddenFor(model => model.SolicitationRoles[i].Id)
+                                                @Html.HiddenFor(model => model.SolicitationRoles[i].ProjectDeliverableId)
+                                                @Html.HiddenFor(model => model.SolicitationRoles[i].RequiredProfessionDisciplineId)
+                                                <td>@Model.SolicitationRoles[i].Description</td>
+                                                <td>@Model.SolicitationRoles[i].ProjectDeliverable?.Name</td>
+                                                <td>
+                                                    @($"{Model.SolicitationRoles[i].RequiredProfessionDiscipline?.ProfessionName} - {Model.SolicitationRoles[i].RequiredProfessionDiscipline?.DisciplineName}")
+                                                </td>
+                                                <td>@Model.SolicitationRoles[i].LumpSum</td>
+                                                <td>@Model.SolicitationRoles[i].HourlyRate</td>
+                                                <td>@Model.SolicitationRoles[i].SignBonus</td>
+                                                <td>@Model.SolicitationRoles[i].DeliverableDeadline</td>
+                                                <td>@Model.SolicitationRoles[i].Workload</td>
+                                                <td>@(Model.SolicitationRoles[i].HasContractor ? "Yes" : "No")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <hr class="p-2" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SolicitationRole.ProjectDeliverableId, htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownListFor(model => model.SolicitationRole.ProjectDeliverableId, Model.SolicitationRole.ProjectDeliverables, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control", @id="projectDeliverableInput" })
+                                    @Html.ValidationMessageFor(model => model.SolicitationRole.ProjectDeliverableId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SolicitationRole.RequiredProfessionDisciplineId, htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownListFor(model => model.SolicitationRole.RequiredProfessionDisciplineId, Model.SolicitationRole.ProfessionDisciplines, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control", @id="requiredProfessionDisciplineInput" })
+                                    @Html.ValidationMessageFor(model => model.SolicitationRole.RequiredProfessionDisciplineId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SolicitationRole.Description, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextAreaFor(model => model.SolicitationRole.Description, new { @class = "form-control", @id="descriptionInput" })
+                                    @Html.ValidationMessageFor(model => model.SolicitationRole.Description, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SolicitationRole.Workload, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.SolicitationRole.Workload, new { htmlAttributes = new { @class = "form-control", @id = "workloadInput" } })
+                                    @Html.ValidationMessageFor(model => model.SolicitationRole.Workload, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SolicitationRole.DeliverableDeadline, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.SolicitationRole.DeliverableDeadline, new { htmlAttributes = new { @class = "form-control", @id = "deliverableDeadlineInput" } })
+                                    @Html.ValidationMessageFor(model => model.SolicitationRole.DeliverableDeadline, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SolicitationRole.LumpSum, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.SolicitationRole.LumpSum, new { htmlAttributes = new { @class = "form-control", @id="lumpSumInput" } })
+                                    @Html.ValidationMessageFor(model => model.SolicitationRole.LumpSum, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SolicitationRole.HourlyRate, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.SolicitationRole.HourlyRate, new { htmlAttributes = new { @class = "form-control", @id="hourlyRateInput" } })
+                                    @Html.ValidationMessageFor(model => model.SolicitationRole.HourlyRate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SolicitationRole.SignBonus, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.SolicitationRole.SignBonus, new { htmlAttributes = new { @class = "form-control", @id="signBonusInput" } })
+                                    @Html.ValidationMessageFor(model => model.SolicitationRole.SignBonus, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="p-1"/>
+                        <div class="row">
+                            <div class="col">
+                                <button id="AddRole" class="btn btn-outline-primary">Add Role</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <a class="btn btn-primary" asp-controller="Solicitations" asp-action="Index">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        var solicitationEdit = {
+            nextFreeIndex: 100000,
+            init: function() {
+                $("#AddRole").on('click', solicitationEdit.addRole);
+            },
+            addRole: function(e) {
+                e.preventDefault();
+
+                var description = $("#descriptionInput").val();
+                var projectDeliverableId = $("#projectDeliverableInput").val();
+                var requiredProfessionDisciplineId = $("#requiredProfessionDisciplineInput").val();
+                var projectDeliverable = $("#projectDeliverableInput option:selected").text();
+                var requiredProfessionDiscipline = $("#requiredProfessionDisciplineInput option:selected").text();
+
+                var lumpSum = $("#lumpSumInput").val();
+                var hourlyRate = $("#hourlyRateInput").val();
+                var signBonus = $("#signBonusInput").val();
+                var deliverableDeadline = $("#deliverableDeadlineInput").val();
+                var workload = $("#workloadInput").val();
+
+                // add a line to table
+                var row = $("<tr>")
+                    .append($("<td>")
+                        .html(description)
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles.Index" }).val(solicitationEdit.nextFreeIndex))
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles[" + solicitationEdit.nextFreeIndex + "].Id" }).val(0))
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles[" + solicitationEdit.nextFreeIndex + "].Description" }).val(description))
+                    ).append($('<td>')
+                        .html(projectDeliverable)
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles[" + solicitationEdit.nextFreeIndex + "].ProjectDeliverableId" }).val(projectDeliverableId))
+                    ).append($('<td>')
+                        .html(requiredProfessionDiscipline)
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles[" + solicitationEdit.nextFreeIndex + "].RequiredProfessionDisciplineId" }).val(requiredProfessionDisciplineId))
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles[" + solicitationEdit.nextFreeIndex + "].RequiredProfessionDiscipline.Id" }).val(requiredProfessionDisciplineId))
+                    ).append($('<td>')
+                        .html(lumpSum)
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles[" + solicitationEdit.nextFreeIndex + "].LumpSum" }).val(lumpSum))
+                    ).append($('<td>')
+                        .html(hourlyRate)
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles[" + solicitationEdit.nextFreeIndex + "].HourlyRate" }).val(hourlyRate))
+                    ).append($('<td>')
+                        .html(signBonus)
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles[" + solicitationEdit.nextFreeIndex + "].SignBonus" }).val(signBonus))
+                    ).append($('<td>')
+                        .html(deliverableDeadline)
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles[" + solicitationEdit.nextFreeIndex + "].DeliverableDeadline" }).val(deliverableDeadline))
+                    ).append($('<td>')
+                        .html(workload)
+                        .append($("<input>", { type: "hidden", name: "SolicitationRoles[" + solicitationEdit.nextFreeIndex + "].Workload" }).val(workload))
+                    ).append($('<td>')
+                        .append("No")
+                    );
+
+                $("#SolicitationRoleTable").append(row);
+
+                // clear inputs
+                $("#projectDeliverableInput").prop('selectedIndex', 0);
+                $("#requiredProfessionDisciplineInput").prop('selectedIndex', 0);
+                $("#descriptionInput").val('');
+                $("#workloadInput").val('');
+                $("#deliverableDeadlineInput").val('');
+                $("#lumpSumInput").val('');
+                $("#hourlyRateInput").val('');
+                $("#signBonusInput").val('');
+
+                solicitationEdit.nextFreeIndex++;
+            }
+        };
+
+        solicitationEdit.init();
+    </script>
+}

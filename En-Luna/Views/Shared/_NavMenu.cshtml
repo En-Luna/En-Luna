@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<head>
+    <link rel="stylesheet" href="~/css/navmenu.css" />
+</head>
+
+<nav id="navbar" class="navbar">
+    <ul>
+        <li><a class="nav-link" href="/">Home</a></li>
+        <li><a class="nav-link scrollto" href="/#about">About</a></li>
+        @* <li><a class="nav-link scrollto" href="#services">Services</a></li>
+        <li><a class="nav-link scrollto" href="#portfolio">Portfolio</a></li>
+        <li><a class="nav-link scrollto" href="#team">Team</a></li>
+        <li><a href="/Blog">Blog</a></li>
+        <li><a class="nav-link scrollto" href="#contact">Contact</a></li> *@
+        @{
+            var user = await UserManager.GetUserAsync(User);
+        }
+
+        @if (user != null && await UserManager.IsInRoleAsync(user, "Solicitor"))
+        {
+            <li><a href=@($"/Solicitations/{user.SolicitorId}")>My Solicitations</a></li>
+        }
+        
+        @if (user != null && await UserManager.IsInRoleAsync(user, "Contractor"))
+        {
+            <li><a href="@($"/Contractors/Contracts/{user.ContractorId}")">My Contracts</a></li>
+        }
+
+        @if (user != null && await UserManager.IsInRoleAsync(user, "Admin"))
+        {
+            <partial name="_AdminPartial" />
+        }
+
+        <partial name="_LoginPartial" />
+    </ul>
+    <i class="bi bi-list mobile-nav-toggle d-none"></i>
+</nav>

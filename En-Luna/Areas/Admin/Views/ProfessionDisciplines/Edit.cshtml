@@ -1,0 +1,40 @@
+﻿@using En_Luna.ViewModels;
+
+@model ProfessionDisciplineEditViewModel
+@{
+    ViewData["Title"] = "Edit Profession Discipline";
+}
+@using (Html.BeginForm())
+{
+    <div class="form-horizontal">
+        <h2>Profession Discipline</h2>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ProfessionId, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.ProfessionId, Model.Professions, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ProfessionId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DisciplineId, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.DisciplineId, Model.Disciplines, En_Luna.Constants.Constants.EmptySelectOptionText, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.DisciplineId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <a class="btn btn-primary" asp-area="Admin" asp-controller="ProfessionDisciplines" asp-action="Index">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

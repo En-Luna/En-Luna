@@ -1,0 +1,190 @@
+﻿@using En_Luna.ViewModels
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@model SolicitationViewModel
+
+@{
+    ViewData["Title"] = "Solicitation";
+    ViewData["AddContainer"] = true;
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<div class="form-horizontal">
+    <h2>Solicitation</h2>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.SolicitorId)
+
+    <div class="row">
+        <div class="col">
+            <div class="card mb-5">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            @Html.LabelFor(model => model.Solicitor, htmlAttributes: new { @class = "control-label" })
+                            <a href="#" class="card-link">@Model.Solicitor.Account.Username</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(model => model.Title, new {  @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.EstimatedEndDate, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.EstimatedEndDate, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TeamMeetingTime, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.TeamMeetingTime, new { htmlAttributes = new { @type = "time", @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TimeZone, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(model => Model.TimeZone, new { @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.County, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.County, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.State, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(model => model.State.Abbreviation, new { @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SharedDriveUrl, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.SharedDriveUrl, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card mb-5">
+                <div class="card-header">
+                    Deadline
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DeadlineType, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(model => model.DeadlineType.Name, new { @class = "form-control", @disabled="disabled" })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control", @disabled="disabled" } })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card mb-5">
+                <div class="card-header">
+                    Roles
+                </div>
+                <div class="card-body">
+                    @Html.HiddenFor(model => model.Id)
+                    <div class="row">
+                        <div class="col">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Project Deliverable</th>
+                                        <th scope="col">Profession Discipline</th>
+                                        <th scope="col">Lump Sum</th>
+                                        <th scope="col">Hourly Rate</th>
+                                        <th scope="col">Sign Bonus</th>
+                                        <th scope="col">Deliverable Deadline</th>
+                                        <th scope="col">Workload</th>
+                                        <th scope="col">Assigned</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="SolicitationRoleTable">
+                                    @foreach (var role in Model.SolicitationRoles)
+                                    {
+                                        <tr>
+                                            <td>@role.Description</td>
+                                            <td>@role.ProjectDeliverable?.Name</td>
+                                            <td>
+                                                @($"{role.RequiredProfessionDiscipline?.ProfessionName} - {role.RequiredProfessionDiscipline?.DisciplineName}")
+                                            </td>
+                                            <td>@role.LumpSum</td>
+                                            <td>@role.HourlyRate</td>
+                                            <td>@role.SignBonus</td>
+                                            <td>@role.DeliverableDeadline</td>
+                                            <td>@role.Workload</td>
+                                            <td>@(role.HasContractor ? "Yes" : "No")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <hr class="p-2" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+
+                <a href="javascript:void(0);" class="btn btn-primary" onclick="modalPopup('/Solicitations/Apply/@Model.Id/@user.ContractorId')">Apply</a>
+                <a class="btn btn-primary" asp-controller="Solicitations" asp-action="Search">Back</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+﻿@using En_Luna.ViewModels
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@model SolicitationIndexViewModel
+
+@{
+    ViewData["Title"] = "Contracts";
+    ViewData["AddContainer"] = true;
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<div class="row">
+    @if (!Model.Solicitations.Any())
+    {
+        <div class="col">
+            <h2>No open contracts found.</h2>
+        </div>
+    }
+    else
+    {
+        @foreach (var solicitation in Model.Solicitations)
+        {
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">@solicitation.Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@solicitation.Solicitor?.Account?.Username</h6>
+                        <p class="card-text">@solicitation.Description</p>
+                        <a href="/Solicitations/View/@solicitation.Id" class="card-link">View</a>
+                        <a href="javascript:void(0);" class="card-link" onclick="modalPopup('/Solicitations/Apply/@solicitation.Id/@user.ContractorId')">Apply</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

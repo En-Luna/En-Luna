@@ -1,0 +1,12 @@
+﻿@using En_Luna.ViewModels
+@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
+@model ApplicationViewModel
+
+<h6>Here is where we will display current account data and allow the user to click submit to apply.</h6>
+
+<a href="javascript:void(0);" class="btn btn-primary" onclick="sendApplication(@Model.SolicitationRoleId, @Model.ContractorId)">Apply</a>

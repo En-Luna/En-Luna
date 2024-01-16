@@ -1,0 +1,52 @@
+﻿@using X.PagedList.Mvc.Core
+@using En_Luna.ViewModels
+
+@model SolicitationRoleIndexViewModel
+
+<div class="row mt-4">
+    <div class="col">
+        <h2>Solicitation Roles</h2>
+        <hr />
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col">
+        <a class="btn btn-primary" asp-area="Admin" asp-controller="SolicitationRoles" asp-action="Edit">New</a>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col">
+        <h4>Current Solicitation Roles</h4>
+    </div>
+</div>
+
+<!--TODO Filters-->
+
+<div class="row mt-2">
+    <div class="col">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">TODO</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (SolicitationRoleViewModel item in Model.SolicitationRoles)
+                {
+                    <tr>
+                        <td>TODO</td>
+                        <td>
+                            <a href="/Admin/SolicitationRoles/Edit/@item.Id" class="btn btn-primary">Edit</a>
+                        </td>
+                        <td>
+                            <a href="javascript:void(0);" class="btn btn-danger" onclick="softDelete('/Admin/SolicitationRoles/Delete', @item.Id, this)">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.PagedListPager(Model.SolicitationRoles, page => Url.Action("Index", new { page }), En_Luna.Helpers.HtmlHelper.PagedListRenderOptions)
+    </div>
+</div>
