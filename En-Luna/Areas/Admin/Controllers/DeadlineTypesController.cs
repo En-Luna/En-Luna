@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -15,17 +14,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class DeadlineTypesController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IDeadlineTypeService _deadlineTypeService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeadlineTypesController"/> class.
         /// </summary>
         /// <param name="mapper"></param>
-        /// <param name="deadlineTypeService"></param>
-        public DeadlineTypesController(IMapper mapper, IDeadlineTypeService deadlineTypeService)
+        public DeadlineTypesController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _deadlineTypeService = deadlineTypeService;
+            _context = context;
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<DeadlineType> deadlineTypes = _deadlineTypeService.List();
+            IEnumerable<DeadlineType> deadlineTypes = _context.DeadlineTypes.ToList();
 
             IPagedList<DeadlineTypeViewModel> deadlineTypeViewModels = deadlineTypes
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -57,7 +55,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             DeadlineType? deadlineType = id.HasValue
-                ? _deadlineTypeService.Get(x => x.Id == id.Value)
+                ? _context.DeadlineTypes.FirstOrDefault(x => x.Id == id.Value)
                 : new DeadlineType();
 
             if (deadlineType == null)
@@ -86,29 +84,32 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (model.Id != 0)
             {
-                DeadlineType? deadlineType = _deadlineTypeService.Get(x => x.Id == model.Id);
+                DeadlineType? deadlineType = _context.DeadlineTypes.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, deadlineType);
-                _deadlineTypeService.Update(deadlineType);
+                _context.DeadlineTypes.Update(deadlineType);
             }
             else
             {
                 DeadlineType deadlineType = _mapper.Map<DeadlineType>(model);
-                _deadlineTypeService.Create(deadlineType);
+                _context.DeadlineTypes.Add(deadlineType);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            DeadlineType? deadlineType = _deadlineTypeService.Get(x => x.Id == id);
+            DeadlineType? deadlineType = _context.DeadlineTypes.FirstOrDefault(x => x.Id == id);
 
             if (deadlineType == null)
             {
                 return Json(false);
             }
 
-            _deadlineTypeService.Delete(deadlineType);
+            _context.DeadlineTypes.Remove(deadlineType);
+            _context.SaveChanges();
 
             return Json(true);
         }

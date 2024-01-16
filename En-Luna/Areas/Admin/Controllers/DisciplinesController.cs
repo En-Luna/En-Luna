@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -15,17 +14,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class DisciplinesController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IDisciplineService _disciplineService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DisciplinesController"/> class.
         /// </summary>
         /// <param name="mapper"></param>
-        /// <param name="disciplineService"></param>
-        public DisciplinesController(IMapper mapper, IDisciplineService disciplineService)
+        public DisciplinesController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _disciplineService = disciplineService;
+            _context = context;
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<Discipline> disciplines = _disciplineService.List();
+            IEnumerable<Discipline> disciplines = _context.Disciplines.ToList();
 
             IPagedList<DisciplineViewModel> disciplineViewModels = disciplines
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -57,7 +55,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             Discipline? discipline = id.HasValue
-                ? _disciplineService.Get(x => x.Id == id.Value)
+                ? _context.Disciplines.FirstOrDefault(x => x.Id == id.Value)
                 : new Discipline();
 
             if (discipline == null)
@@ -86,29 +84,32 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (model.Id != 0)
             {
-                Discipline? discipline = _disciplineService.Get(x => x.Id == model.Id);
+                Discipline? discipline = _context.Disciplines.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, discipline);
-                _disciplineService.Update(discipline);
+                _context.Disciplines.Update(discipline);
             }
             else
             {
                 Discipline discipline = _mapper.Map<Discipline>(model);
-                _disciplineService.Create(discipline);
+                _context.Disciplines.Add(discipline);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            Discipline? discipline = _disciplineService.Get(x => x.Id == id);
+            Discipline? discipline = _context.Disciplines.FirstOrDefault(x => x.Id == id);
 
             if (discipline == null)
             {
                 return Json(false);
             }
 
-            _disciplineService.Delete(discipline);
+            _context.Disciplines.Remove(discipline);
+            _context.SaveChanges();
 
             return Json(true);
         }

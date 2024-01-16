@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Email;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using X.PagedList;
 
@@ -19,40 +19,24 @@ namespace En_Luna.Controllers
     public class SolicitationsController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IApplicationService _applicationService;
-        private readonly IContractorService _contractorService;
-        private readonly IDeadlineTypeService _deadlineTypeService;
         private readonly IEmailSender _emailSender;
-        private readonly IProfessionDisciplineService _professionDisciplineService;
-        private readonly IProjectDeliverableService _projectDeliverableService;
-        private readonly ISolicitationService _solicitationService;
-        private readonly ISolicitationRoleService _solicitationRoleService;
-        private readonly IStateService _stateService;
+        private readonly ApplicationContext _context;
         private readonly UserManager<User> _userManager;
 
         private readonly string[] _toAddresses = new string[] { "enluna.info@gmail.com", "cstalde1@gmail.com" };
 
-        public SolicitationsController(IMapper mapper, IContractorService contractorService, IEmailSender emailSender, IDeadlineTypeService deadlineTypeService, 
-            IProfessionDisciplineService professionDisciplineService, IProjectDeliverableService projectDeliverableService,
-            ISolicitationService solicitationService, IStateService stateService, UserManager<User> userManager, IApplicationService applicationService, ISolicitationRoleService solicitationRoleService)
+        public SolicitationsController(IMapper mapper, IEmailSender emailSender, ApplicationContext context, UserManager<User> userManager)
         {
             _mapper = mapper;
-            _contractorService = contractorService;
             _emailSender = emailSender;
-            _deadlineTypeService = deadlineTypeService;
-            _professionDisciplineService = professionDisciplineService;
-            _projectDeliverableService = projectDeliverableService;
-            _solicitationService = solicitationService;
-            _stateService = stateService;
+            _context = context;
             _userManager = userManager;
-            _applicationService = applicationService;
-            _solicitationRoleService = solicitationRoleService;
         }
 
         [HttpGet("{id:int}/{page:int?}")]
         public IActionResult Index(int id, int? page)
         {
-            IEnumerable<Solicitation> solicitations = _solicitationService.List(x => x.SolicitorId == id && x.IsActive);
+            IEnumerable<Solicitation> solicitations = _context.Solicitations.Where(x => x.SolicitorId == id && x.IsActive).ToList();
 
             IPagedList<SolicitationViewModel> solicitationViewModels = solicitations
                 .ToPagedList(page ?? 1, Constants.Constants.PageSize)
@@ -78,7 +62,7 @@ namespace En_Luna.Controllers
             }
 
             Solicitation? solicitation = id.HasValue
-                ? _solicitationService.Get(x => x.Id == id.Value)
+                ? _context.Solicitations.FirstOrDefault(x => x.Id == id.Value)
                 : new Solicitation();
 
             if (solicitation == null)
@@ -107,31 +91,32 @@ namespace En_Luna.Controllers
             model.PendingApproval = true;
             model.TeamMeetingTime = TimeZoneInfo.ConvertTime(model.TeamMeetingTime, TimeZoneInfo.FindSystemTimeZoneById(model.TimeZone));
 
+            Message? message = default;
+
             if (model.Id != 0)
             {
-                Solicitation? solicitation = _solicitationService.Get(x => x.Id == model.Id);
+                Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, solicitation);
-                _solicitationService.Update(solicitation);
+                _context.Solicitations.Update(solicitation);
 
-                var message = new Message(_toAddresses, 
+                message = new Message(_toAddresses, 
                     "Solicitation Updated", 
                     "There is an existing solicitation updated that needs reviewed. TODO give this html markup"
                 );
-
-                _emailSender.SendEmail(message);
             }
             else
             {
                 Solicitation solicitation = _mapper.Map<Solicitation>(model);
-                _solicitationService.Create(solicitation);
+                _context.Solicitations.Add(solicitation);
 
-                var message = new Message(_toAddresses,
+                message = new Message(_toAddresses,
                     "New Solicitation Posted for Review",
                     "There is a new solicitation posted that needs reviewed. TODO give this html markup"
                 );
-
-                _emailSender.SendEmail(message);
             }
+
+            _context.SaveChanges();
+            _emailSender.SendEmail(message);
 
             return RedirectToAction("Index", "Solicitations", new { Id = model.SolicitorId });
         }
@@ -139,8 +124,8 @@ namespace En_Luna.Controllers
         [HttpGet("Applicants/{id:int}/{page:int?}")]
         public IActionResult Applicants(int id, int? page)
         {
-            var solicitationRoles = _solicitationRoleService.List(x => x.SolicitationId == id);
-            var applications = _applicationService.List(x => solicitationRoles.Select(x => x.Id).Contains(x.SolicitationRoleId));
+            var solicitationRoles = _context.SolicitationRoles.Where(x => x.SolicitationId == id).ToList();
+            var applications = _context.Applications.Where(x => solicitationRoles.Select(x => x.Id).Contains(x.SolicitationRoleId)).ToList();
 
             IPagedList<ApplicationViewModel> applicationsViewModels = applications
                 .ToPagedList(page ?? 1, Constants.Constants.PageSize)
@@ -157,21 +142,24 @@ namespace En_Luna.Controllers
         [HttpGet("Search/{contractorId:int}/{page:int}")]
         public IActionResult Search(int contractorId, int? page)
         {
-            var contractor = _contractorService.Get(x => x.Id == contractorId);
+            var contractor = _context.Contractors.FirstOrDefault(x => x.Id == contractorId);
 
             if (contractor == null) 
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            IEnumerable<Solicitation> solicitations = _solicitationService.List(x => x.Roles, x => 
-                x.IsActive
-                && x.IsApproved
-                && !x.IsDeleted
-                && !x.IsCancelled
-                && !x.IsComplete
-                && x.Roles.Select(r => r.RequiredProfessionDisciplineId).Contains(contractor.ProfessionDisciplineId)
-            );
+            IEnumerable<Solicitation> solicitations = _context.Solicitations
+                .Include(x => x.Roles)
+                .Where(x =>
+                    x.IsActive
+                    && x.IsApproved
+                    && !x.IsDeleted
+                    && !x.IsCancelled
+                    && !x.IsComplete
+                    && x.Roles.Select(r => r.RequiredProfessionDisciplineId).Contains(contractor.ProfessionDisciplineId)
+                )
+                .ToList();
 
             IPagedList<SolicitationViewModel> solicitationViewModels = solicitations
                 .ToPagedList(page ?? 1, Constants.Constants.PageSize)
@@ -188,7 +176,14 @@ namespace En_Luna.Controllers
         [HttpGet("View/{solicitationId:int}")]
         public async Task<IActionResult> View(int solicitationId)
         {
-            Solicitation? solicitation = _solicitationService.Get(x => x.Id == solicitationId);
+            Solicitation? solicitation = _context.Solicitations
+                .Include("Deadline.DeadlineType")
+                .Include(x => x.Roles)
+                .Include("Roles.ProjectDeliverable")
+                .Include("Roles.RequiredProfessionDiscipline.Profession")
+                .Include("Roles.RequiredProfessionDiscipline.Discipline")
+                .Include("Solicitor.Account")
+                .FirstOrDefault(x => x.Id == solicitationId);
 
             if (solicitation == null)
             {
@@ -203,10 +198,10 @@ namespace En_Luna.Controllers
         [HttpGet("Apply/{solicitationId:int}/{contractorId:int}")]
         public IActionResult Apply(int solicitationId, int contractorId)
         {
-            var contractor = _contractorService.Get(x => x.Id == contractorId);
+            var contractor = _context.Contractors.FirstOrDefault(x => x.Id == contractorId);
 
-            var solicitationRole = _solicitationRoleService
-                .Get(x => 
+            var solicitationRole = _context.SolicitationRoles
+                .FirstOrDefault(x => 
                     x.SolicitationId == solicitationId 
                     && x.RequiredProfessionDisciplineId == contractor.ProfessionDisciplineId
             );
@@ -216,8 +211,8 @@ namespace En_Luna.Controllers
                 return RedirectToAction("Search", new { contractorId });
             }
             
-            var application = _applicationService
-                .Get(x => x.SolicitationRoleId == solicitationRole.Id && x.ContractorId == contractorId)
+            var application = _context.Applications
+                .FirstOrDefault(x => x.SolicitationRoleId == solicitationRole.Id && x.ContractorId == contractorId)
                 ?? new Application
                 {
                     ContractorId = contractorId,
@@ -233,7 +228,8 @@ namespace En_Luna.Controllers
         public JsonResult Apply(ApplicationViewModel model)
         {
             var application = _mapper.Map<Application>(model);
-            _applicationService.Create(application);
+            _context.Applications.Add(application);
+            _context.SaveChanges(); 
 
             var message = new Message(_toAddresses,
                 "Application Received",
@@ -247,16 +243,16 @@ namespace En_Luna.Controllers
 
         public JsonResult Activate(int id)
         {
-            //todo add logic that informs admin of activity
-
-            Solicitation? solicitation = _solicitationService.Get(x => x.Id == id);
+            Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == id);
 
             if (solicitation == null)
             {
                 return Json(false);
             }
 
-            _solicitationService.Activate(solicitation);
+            solicitation.IsActive = true;
+            _context.Solicitations.Update(solicitation);
+            _context.SaveChanges();
 
             return Json(true);
         }
@@ -264,48 +260,48 @@ namespace En_Luna.Controllers
         [HttpPost("Deactivate")]
         public JsonResult Deactivate(int id)
         {
-            //todo add logic that informs admin of activity
-
-            Solicitation? solicitation = _solicitationService.Get(x => x.Id == id);
+            Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == id);
 
             if (solicitation == null)
             {
                 return Json(false);
             }
 
-            _solicitationService.Deactivate(solicitation);
+            solicitation.IsActive = false;
+            _context.Solicitations.Update(solicitation);
+            _context.SaveChanges();
 
             return Json(true);
         }
 
         public JsonResult Complete(int id, bool isComplete)
         {
-            //todo add logic that informs admin of activity
-
-            Solicitation? solicitation = _solicitationService.Get(x => x.Id == id);
+            Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == id);
 
             if (solicitation == null)
             {
                 return Json(false);
             }
 
-            _solicitationService.Complete(solicitation, isComplete);
+            solicitation.IsComplete = isComplete;
+            _context.Solicitations.Update(solicitation);
+            _context.SaveChanges();
 
             return Json(true);
         }
 
         public JsonResult Cancel(int id, bool isCancelled)
         {
-            //todo add logic that informs admin of activity
-
-            Solicitation? solicitation = _solicitationService.Get(x => x.Id == id);
+            Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == id);
 
             if (solicitation == null)
             {
                 return Json(false);
             }
 
-            _solicitationService.Cancel(solicitation, isCancelled);
+            solicitation.IsCancelled = isCancelled;
+            _context.Solicitations.Update(solicitation);
+            _context.SaveChanges();
 
             return Json(true);
         }
@@ -313,27 +309,30 @@ namespace En_Luna.Controllers
         private void InstantiateSelectLists(SolicitationEditViewModel model)
         {
             model.SolicitationDeadline.DeadlineTypes = new SelectList(
-                _deadlineTypeService.List(),
+                _context.DeadlineTypes.ToList(),
                 "Id",
                 "Name",
                 model.SolicitationDeadline?.DeadlineTypeId ?? 0
             );
 
             model.SolicitationRole.ProjectDeliverables = new SelectList(
-                _projectDeliverableService.List(), 
+                _context.ProjectDeliverables.ToList(), 
                 "Id", 
                 "Name", 
                 model.SolicitationRole.ProjectDeliverableId
             );
 
             model.SolicitationRole.ProfessionDisciplines = new SelectList(
-                _professionDisciplineService.List(), 
+                _context.ProfessionDisciplines
+                    .Include(x => x.Profession)
+                    .Include(x => x.Discipline)
+                    .ToList(), 
                 "Id", 
                 "Name", 
                 model.SolicitationRole.RequiredProfessionDisciplineId
             );
 
-            model.States = new SelectList(_stateService.List(), "Id", "Name", model.StateId);
+            model.States = new SelectList(_context.States.ToList(), "Id", "Name", model.StateId);
             model.TimeZones = new SelectList(TimeZoneInfo.GetSystemTimeZones(), "Id", "DisplayName");
         }
 

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -16,27 +16,17 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class UsersController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IUserService _accountService;
-        private readonly ICompanyTypeService _companyTypeService;
-        private readonly IProfessionDisciplineService _professionDisciplineService;
-        private readonly IStateService _stateService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UsersController"/> class.
         /// </summary>
         /// <param name="mapper"></param>
         /// <param name="accountService"></param>
-        public UsersController(IMapper mapper, 
-            IUserService accountService, 
-            ICompanyTypeService companyTypeService,
-            IProfessionDisciplineService professionDisciplineService, 
-            IStateService stateService)
+        public UsersController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _accountService = accountService;
-            _companyTypeService = companyTypeService;
-            _professionDisciplineService = professionDisciplineService;
-            _stateService = stateService;
+            _context = context;
         }
 
         /// <summary>
@@ -46,7 +36,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<User> accounts = _accountService.List();
+            IEnumerable<User> accounts = _context.Users.ToList();
 
             IPagedList<UserViewModel> accountViewModels = accounts
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -68,7 +58,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(string? id)
         {
             User? account = !string.IsNullOrWhiteSpace(id)
-                ? _accountService.Get(x => x.Id.Equals(id))
+                ? _context.Users.FirstOrDefault(x => x.Id.Equals(id))
                 : new User();
 
             if (account == null)
@@ -105,43 +95,48 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (!string.IsNullOrWhiteSpace(model.Id))
             {
-                User? account = _accountService.Get(x => x.Id == model.Id);
+                User? account = _context.Users.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, account);
-                _accountService.Update(account);
+                _context.Users.Update(account);
             }
             else
             {
                 User account = _mapper.Map<User>(model);
-                _accountService.Create(account);
+                _context.Users.Add(account);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(string id)
         {
-            User? account = _accountService.Get(x => x.Id.Equals(id));
+            User? account = _context.Users.FirstOrDefault(x => x.Id.Equals(id));
 
             if (account == null)
             {
                 return Json(false);
             }
 
-            _accountService.Delete(account);
+            _context.Users.Remove(account);
+            _context.SaveChanges();
 
             return Json(true);
         }
 
         public JsonResult Verify(int id)
         {
-            User? account = _accountService.Get(x => x.Id.Equals(id));
+            User? account = _context.Users.FirstOrDefault(x => x.Id.Equals(id));
 
             if (account == null)
             {
                 return Json(false);
             }
 
-            _accountService.Verify(account);
+            account.IsVerified = true;
+            _context.Users.Update(account);
+            _context.SaveChanges();
 
             return Json(true);
         }
@@ -151,22 +146,21 @@ namespace Jobbie.Web.Areas.Admin.Controllers
             model.Address = model.Address ?? new();
             model.BankAccount = model.BankAccount ?? new();
             model.Contractor = model.Contractor ?? new();
-            //model.Solicitor = model.Solicitor ?? new();
         }
 
         private void InstantiateSelectLists(UserEditViewModel model)
         {
-            model.Address.States = new SelectList(_stateService.List(), "Id", "Name", model.Address.StateId);
+            model.Address.States = new SelectList(_context.States.ToList(), "Id", "Name", model.Address.StateId);
             model.Contractor.ProfessionDisciplines = new SelectList(
-                _professionDisciplineService
-                    .List()
+                _context.ProfessionDisciplines
+                    .ToList()
                     .OrderBy(x => x.Profession.Name)
                     .ThenBy(x => x.Discipline.Name),
                 "Id",
                 "Name",
                 model.Contractor.ProfessionDisciplineId
             );
-            model.CompanyTypes = new SelectList(_companyTypeService.List(), "Id", "Name", model.CompanyTypeId);
+            model.CompanyTypes = new SelectList(_context.CompanyTypes.ToList(), "Id", "Name", model.CompanyTypeId);
         }
     }
 }

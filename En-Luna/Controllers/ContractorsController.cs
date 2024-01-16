@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using X.PagedList;
 
 namespace En_Luna.Controllers
@@ -14,12 +14,12 @@ namespace En_Luna.Controllers
     public class ContractorsController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IContractorService _contractorService;
+        private readonly ApplicationContext _context;
 
-        public ContractorsController(IMapper mapper, IContractorService contractorService)
+        public ContractorsController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _contractorService = contractorService;
+            _context = context;
         }
 
         public IActionResult Index()
@@ -35,7 +35,9 @@ namespace En_Luna.Controllers
         [HttpGet("Contracts/{contractorId:int}/{page:int?}")]
         public IActionResult Contracts(int contractorId, int? page)
         {
-            var contractor = _contractorService.Get("Solicitations.Solicitation", x => x.Id == contractorId);
+            var contractor = _context.Contractors
+                .Include("Solicitations.Solicitation")
+                .FirstOrDefault(x => x.Id == contractorId);
 
             if (contractor == null)
             {

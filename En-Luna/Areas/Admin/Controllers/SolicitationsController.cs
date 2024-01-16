@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -16,19 +15,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class SolicitationsController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly ISolicitationService _solicitationService;
-        private readonly IStateService _stateService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SolicitationsController"/> class.
         /// </summary>
-        /// <param name="mapper"></param>
-        /// <param name="service"></param>
-        public SolicitationsController(IMapper mapper, ISolicitationService service, IStateService stateService)
+        /// <param name="mapper"></param>>
+        public SolicitationsController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _solicitationService = service;
-            _stateService = stateService;
+            _context = context;
         }
 
         /// <summary>
@@ -38,7 +34,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<Solicitation> solicitations = _solicitationService.List();
+            IEnumerable<Solicitation> solicitations = _context.Solicitations.ToList();
 
             IPagedList<SolicitationViewModel> solicitationViewModels = solicitations
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -60,7 +56,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             Solicitation? solicitation = id.HasValue
-                ? _solicitationService.Get(x => x.Id == id.Value)
+                ? _context.Solicitations.FirstOrDefault(x => x.Id == id.Value)
                 : new Solicitation();
 
             if (solicitation == null)
@@ -90,57 +86,64 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (model.Id != 0)
             {
-                Solicitation? solicitation = _solicitationService.Get(x => x.Id == model.Id);
+                Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, solicitation);
-                _solicitationService.Update(solicitation);
+                _context.Solicitations.Update(solicitation);
             }
             else
             {
                 Solicitation solicitation = _mapper.Map<Solicitation>(model);
-                _solicitationService.Create(solicitation);
+                _context.Solicitations.Add(solicitation);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Activate(int id)
         {
-            Solicitation? solicitation = _solicitationService.Get(x => x.Id == id);
+            Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == id);
 
             if (solicitation == null)
             {
                 return Json(false);
             }
 
-            _solicitationService.Activate(solicitation);
+            solicitation.IsActive = true;
+            _context.Solicitations.Update(solicitation);
+            _context.SaveChanges();
 
             return Json(true);
         }
         
         public JsonResult Deactivate(int id)
         {
-            Solicitation? solicitation = _solicitationService.Get(x => x.Id == id);
+            Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == id);
 
             if (solicitation == null)
             {
                 return Json(false);
             }
-
-            _solicitationService.Deactivate(solicitation);
+            solicitation.IsActive = false;
+            _context.Solicitations.Update(solicitation);
+            _context.SaveChanges();
 
             return Json(true);
         }
 
         public JsonResult Complete(int id, bool isComplete)
         {
-            Solicitation? solicitation = _solicitationService.Get(x => x.Id == id);
+            Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == id);
 
             if (solicitation == null)
             {
                 return Json(false);
             }
 
-            _solicitationService.Complete(solicitation, isComplete);
+            solicitation.IsComplete = isComplete;
+            _context.Solicitations.Update(solicitation);
+            _context.SaveChanges();
 
             return Json(true);
         }
@@ -150,34 +153,38 @@ namespace Jobbie.Web.Areas.Admin.Controllers
             // todo send approved in ajax post
             isApproved = true;
 
-            Solicitation? solicitation = _solicitationService.Get(x => x.Id == id);
+            Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == id);
 
             if (solicitation == null)
             {
                 return Json(false);
             }
 
-            _solicitationService.Approve(solicitation, isApproved);
+            solicitation.IsApproved = isApproved;
+            _context.Solicitations.Update(solicitation);
+            _context.SaveChanges();
 
             return Json(true);
         }
         public JsonResult Cancel(int id, bool isCancelled)
         {
-            Solicitation? solicitation = _solicitationService.Get(x => x.Id == id);
+            Solicitation? solicitation = _context.Solicitations.FirstOrDefault(x => x.Id == id);
 
             if (solicitation == null)
             {
                 return Json(false);
             }
 
-            _solicitationService.Cancel(solicitation, isCancelled);
+            solicitation.IsCancelled = isCancelled;
+            _context.Solicitations.Update(solicitation);
+            _context.SaveChanges();
 
             return Json(true);
         }
 
         private void InstantiateSelectLists(SolicitationEditViewModel model)
         {
-            model.States = new SelectList(_stateService.List(), "Id", "Name", model.StateId);
+            model.States = new SelectList(_context.States.ToList(), "Id", "Name", model.StateId);
         }
     }
 }

@@ -17,10 +17,10 @@ namespace En_Luna.Areas.Identity.Pages.Account
     using AutoMapper;
     using En_Luna.Data;
     using En_Luna.Data.Models;
-    using En_Luna.Data.Services;
     using En_Luna.Extensions;
     using En_Luna.ViewModels;
     using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.EntityFrameworkCore;
     using System.ComponentModel;
 
     public class RegisterModel : PageModel
@@ -32,12 +32,8 @@ namespace En_Luna.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<User> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly IStateService _stateService;
-        private readonly IProfessionDisciplineService _professionDisciplineService;
-        private readonly ICompanyTypeService _companyTypeService;
         private readonly IMapper _mapper;
         private readonly ApplicationContext _context;
-        private readonly IAddressService _addressService;
 
         public RegisterModel(
             UserManager<User> userManager,
@@ -46,12 +42,8 @@ namespace En_Luna.Areas.Identity.Pages.Account
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IStateService stateService,
-            IProfessionDisciplineService professionDisciplineService,
-            ICompanyTypeService companyTypeService,
             IMapper mapper,
-            ApplicationContext context,
-            IAddressService addressService)
+            ApplicationContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -60,12 +52,8 @@ namespace En_Luna.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _stateService = stateService;
-            _professionDisciplineService = professionDisciplineService;
-            _companyTypeService = companyTypeService;
             _mapper = mapper;
             _context = context;
-            _addressService = addressService;
         }
 
         /// <summary>
@@ -284,17 +272,19 @@ namespace En_Luna.Areas.Identity.Pages.Account
 
         private void InstantiateSelectLists()
         {
-            Input.Address.States = new SelectList(_stateService.List(), "Id", "Name", Input.Address.StateId);
+            Input.Address.States = new SelectList(_context.States.ToList(), "Id", "Name", Input.Address.StateId);
             Input.Contractor.ProfessionDisciplines = new SelectList(
-                _professionDisciplineService
-                    .List()
+                _context.ProfessionDisciplines
+                    .Include(x => x.Profession)
+                    .Include(x => x.Discipline)
+                    .ToList()
                     .OrderBy(x => x.Profession.Name)
                     .ThenBy(x => x.Discipline.Name),
                 "Id",
                 "Name",
                 Input.Contractor.ProfessionDisciplineId
             );
-            Input.CompanyTypes = new SelectList(_companyTypeService.List(), "Id", "Name", Input.CompanyTypeId);
+            Input.CompanyTypes = new SelectList(_context.CompanyTypes.ToList(), "Id", "Name", Input.CompanyTypeId);
         }
 
         private string GenerateUsername(UserEditViewModel user)

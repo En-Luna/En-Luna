@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -15,17 +14,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class ProfessionsController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IProfessionService _professionService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfessionsController"/> class.
         /// </summary>
         /// <param name="mapper"></param>
-        /// <param name="service"></param>
-        public ProfessionsController(IMapper mapper, IProfessionService service)
+        public ProfessionsController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _professionService = service;
+            _context = context;
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<Profession> professions = _professionService.List();
+            IEnumerable<Profession> professions = _context.Professions.ToList();
 
             IPagedList<ProfessionViewModel> professionViewModels = professions
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -57,7 +55,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             Profession? profession = id.HasValue
-                ? _professionService.Get(x => x.Id == id.Value)
+                ? _context.Professions.FirstOrDefault(x => x.Id == id.Value)
                 : new Profession();
 
             if (profession == null)
@@ -86,29 +84,32 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (model.Id != 0)
             {
-                Profession? profession = _professionService.Get(x => x.Id == model.Id);
+                Profession? profession = _context.Professions.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, profession);
-                _professionService.Update(profession);
+                _context.Professions.Update(profession);
             }
             else
             {
                 Profession profession = _mapper.Map<Profession>(model);
-                _professionService.Create(profession);
+                _context.Professions.Add(profession);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            Profession? profession = _professionService.Get(x => x.Id == id);
+            Profession? profession = _context.Professions.FirstOrDefault(x => x.Id == id);
 
             if (profession == null)
             {
                 return Json(false);
             }
 
-            _professionService.Delete(profession);
+            _context.Professions.Remove(profession);
+            _context.SaveChanges();
 
             return Json(true);
         }

@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -15,17 +14,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class ProjectDeliverablesController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IProjectDeliverableService _projectDeliverableService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectDeliverablesController"/> class.
         /// </summary>
         /// <param name="mapper"></param>
-        /// <param name="service"></param>
-        public ProjectDeliverablesController(IMapper mapper, IProjectDeliverableService service)
+        public ProjectDeliverablesController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _projectDeliverableService = service;
+            _context = context;
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<ProjectDeliverable> projectDeliverables = _projectDeliverableService.List();
+            IEnumerable<ProjectDeliverable> projectDeliverables = _context.ProjectDeliverables.ToList();
 
             IPagedList<ProjectDeliverableViewModel> projectDeliverableViewModels = projectDeliverables
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -57,7 +55,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             ProjectDeliverable? projectDeliverable = id.HasValue
-                ? _projectDeliverableService.Get(x => x.Id == id.Value)
+                ? _context.ProjectDeliverables.FirstOrDefault(x => x.Id == id.Value)
                 : new ProjectDeliverable();
 
             if (projectDeliverable == null)
@@ -80,35 +78,37 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                //InstantiateSelectLists(model);
                 return View(model);
             }
 
             if (model.Id != 0)
             {
-                ProjectDeliverable? projectDeliverable = _projectDeliverableService.Get(x => x.Id == model.Id);
+                ProjectDeliverable? projectDeliverable = _context.ProjectDeliverables.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, projectDeliverable);
-                _projectDeliverableService.Update(projectDeliverable);
+                _context.ProjectDeliverables.Update(projectDeliverable);
             }
             else
             {
                 ProjectDeliverable projectDeliverable = _mapper.Map<ProjectDeliverable>(model);
-                _projectDeliverableService.Create(projectDeliverable);
+                _context.ProjectDeliverables.Add(projectDeliverable);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            ProjectDeliverable? projectDeliverable = _projectDeliverableService.Get(x => x.Id == id);
+            ProjectDeliverable? projectDeliverable = _context.ProjectDeliverables.FirstOrDefault(x => x.Id == id);
 
             if (projectDeliverable == null)
             {
                 return Json(false);
             }
 
-            _projectDeliverableService.Delete(projectDeliverable);
+            _context.ProjectDeliverables.Remove(projectDeliverable);
+            _context.SaveChanges();
 
             return Json(true);
         }

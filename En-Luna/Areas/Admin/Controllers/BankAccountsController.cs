@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -15,17 +14,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class BankAccountsController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IBankAccountService _bankAccountService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BankAccountsController"/> class.
         /// </summary>
         /// <param name="mapper"></param>
-        /// <param name="bankAccountService"></param>
-        public BankAccountsController(IMapper mapper, IBankAccountService bankAccountService)
+        public BankAccountsController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _bankAccountService = bankAccountService;
+            _context = context;
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<BankAccount> accounts = _bankAccountService.List();
+            IEnumerable<BankAccount> accounts = _context.BankAccounts.ToList();
 
             IPagedList<BankAccountViewModel> accountViewModels = accounts
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -57,7 +55,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             BankAccount? account = id.HasValue
-                ? _bankAccountService.Get(x => x.Id == id.Value)
+                ? _context.BankAccounts.FirstOrDefault(x => x.Id == id.Value)
                 : new BankAccount();
 
             if (account == null)
@@ -85,42 +83,47 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (model.Id != 0)
             {
-                BankAccount? account = _bankAccountService.Get(x => x.Id == model.Id);
+                BankAccount? account = _context.BankAccounts.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, account);
-                _bankAccountService.Update(account);
+                _context.BankAccounts.Update(account);
             }
             else
             {
                 BankAccount account = _mapper.Map<BankAccount>(model);
-                _bankAccountService.Create(account);
+                _context.BankAccounts.Add(account);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            BankAccount? account = _bankAccountService.Get(x => x.Id == id);
+            BankAccount? account = _context.BankAccounts.FirstOrDefault(x => x.Id == id);
 
             if (account == null)
             {
                 return Json(false);
             }
 
-            _bankAccountService.Delete(account);
+            _context.BankAccounts.Remove(account);
+            _context.SaveChanges();
 
             return Json(true);
         }
         public JsonResult Verify(int id)
         {
-            BankAccount? account = _bankAccountService.Get(x => x.Id == id);
+            BankAccount? account = _context.BankAccounts.FirstOrDefault(x => x.Id == id);
 
             if (account == null)
             {
                 return Json(false);
             }
 
-            _bankAccountService.Verify(account);
+            account.IsVerified = true;
+            _context.BankAccounts.Update(account);
+            _context.SaveChanges();
 
             return Json(true);
         }

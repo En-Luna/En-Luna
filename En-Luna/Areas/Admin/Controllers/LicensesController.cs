@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -16,24 +16,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class LicensesController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IUserService _userService;
-        private readonly ILicenseService _licenseService;
-        private readonly IStateService _stateService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LicensesController"/> class.
         /// </summary>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="userService">The account service.</param>
-        /// <param name="service">The service.</param>
-        /// <param name="stateService">The state service.</param>
-        public LicensesController(IMapper mapper, IUserService userService, 
-            ILicenseService service, IStateService stateService)
+        public LicensesController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _userService = userService;
-            _licenseService = service;
-            _stateService = stateService;
+            _context = context;
         }
 
         /// <summary>
@@ -43,7 +35,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<License> licenses = _licenseService.List();
+            IEnumerable<License> licenses = _context.Licenses.ToList();
 
             IPagedList<LicenseViewModel> licenseViewModels = licenses
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -65,7 +57,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             License? license = id.HasValue
-                ? _licenseService.Get(x => x.Id == id.Value)
+                ? _context.Licenses.FirstOrDefault(x => x.Id == id.Value)
                 : new License();
 
             if (license == null)
@@ -95,43 +87,48 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (model.Id != 0)
             {
-                License? license = _licenseService.Get(x => x.Id == model.Id);
+                License? license = _context.Licenses.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, license);
-                _licenseService.Update(license);
+                _context.Licenses.Update(license);
             }
             else
             {
                 License license = _mapper.Map<License>(model);
-                _licenseService.Create(license);
+                _context.Licenses.Add(license);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            License? license = _licenseService.Get(x => x.Id == id);
+            License? license = _context.Licenses.FirstOrDefault(x => x.Id == id);
 
             if (license == null)
             {
                 return Json(false);
             }
 
-            _licenseService.Delete(license);
+            _context.Licenses.Remove(license);
+            _context.SaveChanges();
 
             return Json(true);
         }
 
         public JsonResult Verify(int id)
         {
-            License? license = _licenseService.Get(x => x.Id == id);
+            License? license = _context.Licenses.FirstOrDefault(x => x.Id == id);
 
             if (license == null)
             {
                 return Json(false);
             }
 
-            _licenseService.Verify(license);
+            license.IsVerified = true;
+            _context.Licenses.Update(license);
+            _context.SaveChanges();
 
             return Json(true);
         }
@@ -139,17 +136,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         private void InstantiateSelectLists(LicenseEditViewModel model)
         {
             model.Contractors = new SelectList(
-                _userService
-                .List()
-                .OrderBy(x => x.LastName).ThenBy(x => x.FirstName)
-                .Select(
-                    x => new { x.ContractorId, Name = $"{x.LastName}, {x.FirstName}"}), 
+                _context.Users
+                    .ToList()
+                    .OrderBy(x => x.LastName).ThenBy(x => x.FirstName)
+                    .Select(x => new { x.ContractorId, Name = $"{x.LastName}, {x.FirstName}"}), 
                 "ContractorId", 
                 "Name", 
                 model.ContractorId
             );
 
-            model.States = new SelectList(_stateService.List(), "Id", "Name", model.StateId);
+            model.States = new SelectList(_context.States.ToList(), "Id", "Name", model.StateId);
         }
     }
 }

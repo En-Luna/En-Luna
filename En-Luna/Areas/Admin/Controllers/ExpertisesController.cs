@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -16,20 +15,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class ExpertisesController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IExpertiseService _expertiseService;
-        private readonly IFocusService _focusService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpertisesController"/> class.
         /// </summary>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="service">The service.</param>
-        /// <param name="focusService">The focus service.</param>
-        public ExpertisesController(IMapper mapper, IExpertiseService service, IFocusService focusService)
+        public ExpertisesController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _expertiseService = service;
-            _focusService = focusService;
+            _context = context;
         }
 
         /// <summary>
@@ -39,7 +34,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<Expertise> expertises = _expertiseService.List();
+            IEnumerable<Expertise> expertises = _context.Expertises.ToList();
 
             IPagedList<ExpertiseViewModel> expertiseViewModels = expertises
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -61,7 +56,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             Expertise? expertise = id.HasValue
-                ? _expertiseService.Get(x => x.Id == id.Value)
+                ? _context.Expertises.FirstOrDefault(x => x.Id == id.Value)
                 : new Expertise();
 
             if (expertise == null)
@@ -91,36 +86,39 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (model.Id != 0)
             {
-                Expertise? expertise = _expertiseService.Get(x => x.Id == model.Id);
+                Expertise? expertise = _context.Expertises.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, expertise);
-                _expertiseService.Update(expertise);
+                _context.Expertises.Update(expertise);
             }
             else
             {
                 Expertise expertise = _mapper.Map<Expertise>(model);
-                _expertiseService.Create(expertise);
+                _context.Expertises.Add(expertise);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            Expertise? expertise = _expertiseService.Get(x => x.Id == id);
+            Expertise? expertise = _context.Expertises.FirstOrDefault(x => x.Id == id);
 
             if (expertise == null)
             {
                 return Json(false);
             }
 
-            _expertiseService.Delete(expertise);
+            _context.Expertises.Remove(expertise);
+            _context.SaveChanges();
 
             return Json(true);
         }
 
         private void InstantiateSelectLists(ExpertiseEditViewModel model)
         {
-            model.Focuses = new SelectList(_focusService.List(), "Id", "Name", model.FocusId);
+            model.Focuses = new SelectList(_context.Focuses.ToList(), "Id", "Name", model.FocusId);
         }
     }
 }

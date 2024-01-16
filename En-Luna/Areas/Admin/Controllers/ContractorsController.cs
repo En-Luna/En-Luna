@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -16,24 +16,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class ContractorsController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IContractorService _contractorService;
-        private readonly IProfessionDisciplineService _professionDisciplineService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContractorsController"/> class.
         /// </summary>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="contractorService">The contractor service.</param>
-        /// <param name="disciplineService">The discipline service.</param>
-        /// <param name="professionService">The profession service.</param>
-        /// <param name="professionDisciplineService">The profession discipline service.</param>
-        public ContractorsController(IMapper mapper, 
-            IContractorService contractorService, 
-            IProfessionDisciplineService professionDisciplineService)
+        public ContractorsController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _contractorService = contractorService;
-            _professionDisciplineService = professionDisciplineService;
+            _context = context;
         }
 
         /// <summary>
@@ -43,7 +35,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<Contractor> contractors = _contractorService.List();
+            IEnumerable<Contractor> contractors = _context.Contractors.ToList();
 
             IPagedList<ContractorViewModel> contractorViewModels = contractors
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -65,7 +57,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             Contractor? contractor = id.HasValue
-                ? _contractorService.Get(x => x.Id == id.Value)
+                ? _context.Contractors.FirstOrDefault(x => x.Id == id.Value)
                 : new Contractor();
 
             if (contractor == null)
@@ -99,29 +91,32 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (model.Id != 0)
             {
-                Contractor? contractor = _contractorService.Get(x => x.Id == model.Id);
+                Contractor? contractor = _context.Contractors.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, contractor);
-                _contractorService.Update(contractor);
+                _context.Contractors.Update(contractor);
             }
             else
             {
                 Contractor contractor = _mapper.Map<Contractor>(model);
-                _contractorService.Create(contractor);
+                _context.Contractors.Add(contractor);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            Contractor? contractor = _contractorService.Get(x => x.Id == id);
+            Contractor? contractor = _context.Contractors.FirstOrDefault(x => x.Id == id);
 
             if (contractor == null)
             {
                 return Json(false);
             }
 
-            _contractorService.Delete(contractor);
+            _context.Contractors.Remove(contractor);
+            _context.SaveChanges();
 
             return Json(true);
         }
@@ -134,8 +129,8 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         private void InstantiateSelectLists(ContractorEditViewModel model)
         {
             model.ProfessionDisciplines = new SelectList(
-                _professionDisciplineService
-                    .List()
+                _context.ProfessionDisciplines
+                    .ToList()
                     .OrderBy(x => x.Profession.Name)
                     .ThenBy(x => x.Discipline.Name), 
                 "Id", 

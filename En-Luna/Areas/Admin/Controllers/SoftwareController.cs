@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -15,17 +14,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class SoftwareController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly ISoftwareService _softwareService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoftwareController"/> class.
         /// </summary>
         /// <param name="mapper"></param>
-        /// <param name="service"></param>
-        public SoftwareController(IMapper mapper, ISoftwareService service)
+        public SoftwareController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _softwareService = service;
+            _context = context;
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<Software> softwares = _softwareService.List();
+            IEnumerable<Software> softwares = _context.Software.ToList();
 
             IPagedList<SoftwareViewModel> softwareViewModels = softwares
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -57,7 +55,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             Software? software = id.HasValue
-                ? _softwareService.Get(x => x.Id == id.Value)
+                ? _context.Software.FirstOrDefault(x => x.Id == id.Value)
                 : new Software();
 
             if (software == null)
@@ -80,35 +78,37 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                //InstantiateSelectLists(model);
                 return View(model);
             }
 
             if (model.Id != 0)
             {
-                Software? software = _softwareService.Get(x => x.Id == model.Id);
+                Software? software = _context.Software.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, software);
-                _softwareService.Update(software);
+                _context.Software.Update(software);
             }
             else
             {
                 Software software = _mapper.Map<Software>(model);
-                _softwareService.Create(software);
+                _context.Software.Add(software);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            Software? software = _softwareService.Get(x => x.Id == id);
+            Software? software = _context.Software.FirstOrDefault(x => x.Id == id);
 
             if (software == null)
             {
                 return Json(false);
             }
 
-            _softwareService.Delete(software);
+            _context.Software.Remove(software);
+            _context.SaveChanges();
 
             return Json(true);
         }

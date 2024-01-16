@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -16,20 +15,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class FocusesController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IDisciplineService _disciplineService;
-        private readonly IFocusService _focusService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FocusesController"/> class.
         /// </summary>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="disciplineService">The discipline service.</param>
-        /// <param name="service">The service.</param>
-        public FocusesController(IMapper mapper, IDisciplineService disciplineService, IFocusService service)
+        public FocusesController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _disciplineService = disciplineService;
-            _focusService = service;
+            _context = context;
         }
 
         /// <summary>
@@ -39,7 +34,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<Focus> focuses = _focusService.List();
+            IEnumerable<Focus> focuses = _context.Focuses.ToList();
 
             IPagedList<FocusViewModel> focusViewModels = focuses
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -61,7 +56,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             Focus? focus = id.HasValue
-                ? _focusService.Get(x => x.Id == id.Value)
+                ? _context.Focuses.FirstOrDefault(x => x.Id == id.Value)
                 : new Focus();
 
             if (focus == null)
@@ -91,36 +86,39 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (model.Id != 0)
             {
-                Focus? focus = _focusService.Get(x => x.Id == model.Id);
+                Focus? focus = _context.Focuses.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, focus);
-                _focusService.Update(focus);
+                _context.Focuses.Update(focus);
             }
             else
             {
                 Focus focus = _mapper.Map<Focus>(model);
-                _focusService.Create(focus);
+                _context.Focuses.Add(focus);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            Focus? focus = _focusService.Get(x => x.Id == id);
+            Focus? focus = _context.Focuses.FirstOrDefault(x => x.Id == id);
 
             if (focus == null)
             {
                 return Json(false);
             }
 
-            _focusService.Delete(focus);
+            _context.Focuses.Remove(focus);
+            _context.SaveChanges();
 
             return Json(true);
         }
 
         private void InstantiateSelectLists(FocusEditViewModel model)
         {
-            model.Disciplines = new SelectList(_disciplineService.List(), "Id", "Name", model.DisciplineId);
+            model.Disciplines = new SelectList(_context.Disciplines.ToList(), "Id", "Name", model.DisciplineId);
         }
     }
 }

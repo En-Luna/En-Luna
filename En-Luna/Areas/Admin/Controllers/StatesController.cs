@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -15,17 +14,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class StatesController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IStateService _stateService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StatesController"/> class.
         /// </summary>
         /// <param name="mapper"></param>
-        /// <param name="service"></param>
-        public StatesController(IMapper mapper, IStateService service)
+        public StatesController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _stateService = service;
+            _context = context;
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<State> states = _stateService.List();
+            IEnumerable<State> states = _context.States.ToList();
 
             IPagedList<StateViewModel> stateViewModels = states
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -57,7 +55,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             State? state = id.HasValue
-                ? _stateService.Get(x => x.Id == id.Value)
+                ? _context.States.FirstOrDefault(x => x.Id == id.Value)
                 : new State();
 
             if (state == null)
@@ -86,29 +84,32 @@ namespace Jobbie.Web.Areas.Admin.Controllers
 
             if (model.Id != 0)
             {
-                State? state = _stateService.Get(x => x.Id == model.Id);
+                State? state = _context.States.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, state);
-                _stateService.Update(state);
+                _context.States.Update(state);
             }
             else
             {
                 State state = _mapper.Map<State>(model);
-                _stateService.Create(state);
+                _context.States.Add(state);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Delete(int id)
         {
-            State? state = _stateService.Get(x => x.Id == id);
+            State? state = _context.States.FirstOrDefault(x => x.Id == id);
 
             if (state == null)
             {
                 return Json(false);
             }
 
-            _stateService.Delete(state);
+            _context.States.Remove(state);
+            _context.SaveChanges();
 
             return Json(true);
         }

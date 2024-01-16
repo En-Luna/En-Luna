@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using En_Luna.Data;
 using En_Luna.Data.Models;
-using En_Luna.Data.Services;
 using En_Luna.Extensions;
 using En_Luna.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using X.PagedList;
 
 namespace Jobbie.Web.Areas.Admin.Controllers
@@ -15,17 +14,16 @@ namespace Jobbie.Web.Areas.Admin.Controllers
     public class DocumentsController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly IDocumentService _documentService;
+        private readonly ApplicationContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentsController"/> class.
         /// </summary>
         /// <param name="mapper"></param>
-        /// <param name="service"></param>
-        public DocumentsController(IMapper mapper, IDocumentService service)
+        public DocumentsController(IMapper mapper, ApplicationContext context)
         {
             _mapper = mapper;
-            _documentService = service;
+            _context = context;
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult Index(int? page)
         {
-            IEnumerable<Document> documents = _documentService.List();
+            IEnumerable<Document> documents = _context.Documents.ToList();
 
             IPagedList<DocumentViewModel> documentViewModels = documents
                 .ToPagedList(page ?? 1, En_Luna.Constants.Constants.PageSize)
@@ -57,7 +55,7 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         public IActionResult Edit(int? id)
         {
             Document? document = id.HasValue
-                ? _documentService.Get(x => x.Id == id.Value)
+                ? _context.Documents.FirstOrDefault(x => x.Id == id.Value)
                 : new Document();
 
             if (document == null)
@@ -80,67 +78,69 @@ namespace Jobbie.Web.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                //InstantiateSelectLists(model);
                 return View(model);
             }
 
             if (model.Id != 0)
             {
-                Document? document = _documentService.Get(x => x.Id == model.Id);
+                Document? document = _context.Documents.FirstOrDefault(x => x.Id == model.Id);
                 _mapper.Map(model, document);
-                _documentService.Update(document);
+                _context.Documents.Update(document);
             }
             else
             {
                 Document document = _mapper.Map<Document>(model);
-                _documentService.Create(document);
+                _context.Documents.Add(document);
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public JsonResult Approve(int id)
         {
-            Document? document = _documentService.Get(x => x.Id == id);
+            Document? document = _context.Documents.FirstOrDefault(x => x.Id == id);
 
             if (document == null)
             {
                 return Json(false);
             }
 
-            _documentService.Approve(document);
-
-            // todo notify user
+            document.IsVerified = true;
+            _context.Documents.Update(document);
+            _context.SaveChanges();
 
             return Json(true);
         }
 
         public JsonResult Deny(int id)
         {
-            Document? document = _documentService.Get(x => x.Id == id);
+            Document? document = _context.Documents.FirstOrDefault(x => x.Id == id);
 
             if (document == null)
             {
                 return Json(false);
             }
 
-            _documentService.Deny(document);
-
-            // todo notify user
+            document.IsVerified = false;
+            _context.Documents.Update(document);
+            _context.SaveChanges();
 
             return Json(true);
         }
 
         public JsonResult Delete(int id)
         {
-            Document? document = _documentService.Get(x => x.Id == id);
+            Document? document = _context.Documents.FirstOrDefault(x => x.Id == id);
 
             if (document == null)
             {
                 return Json(false);
             }
 
-            _documentService.Delete(document);
+            _context.Documents.Remove(document);
+            _context.SaveChanges();
 
             return Json(true);
         }
